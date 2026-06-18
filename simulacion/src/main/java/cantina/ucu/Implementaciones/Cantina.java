@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.concurrent.Semaphore;
 
 import cantina.ucu.Interfaces.ICantina;
@@ -13,7 +14,7 @@ import cantina.ucu.Interfaces.IRecursoCompartido;
 public class Cantina implements ICantina {
 
     private IRecursoCompartido cafetera;
-    private Queue<IPedido> pedidosPendientes;
+    private PriorityQueue<IPedido> pedidosPendientes;
     private IRecursoCompartido caja;
     private ArrayList<Runnable> baristas;
     private Stack<IPedido> pedidosCompletados;
@@ -30,7 +31,7 @@ public class Cantina implements ICantina {
             baristas.add(new Barista());
         }
         this.pedidosCompletados = new Stack<>();
-        this.pedidosPendientes = new LinkedList<>();
+        this.pedidosPendientes = new PriorityQueue<>();
         this.semaforoCafetera = new Semaphore(cafetera.getCantidad());
         this.semaforoCaja = new Semaphore(caja.getCantidad());
         this.semaforoBarista = new Semaphore(cantidadBaristas);
@@ -39,8 +40,10 @@ public class Cantina implements ICantina {
 
     @Override
     public void procesarPedido() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'procesarPedido'");
+        /*  adquiere semaforoBarista
+            procesa el pedido con más prioridad con el run de barista
+            libera semaforoBarista
+        */
     }
 
     @Override

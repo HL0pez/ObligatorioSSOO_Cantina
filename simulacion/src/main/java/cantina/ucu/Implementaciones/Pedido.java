@@ -26,13 +26,24 @@ public class Pedido implements IPedido {
             this.precio += producto.getPrecio();
             this.tiempoDePreparacion += producto.getTiempoDePreparacion();
         }
-        this.estaPago = estaPago;
+        if (fuenteDePedido == fuenteDePedido.MOSTRADOR) {
+            estaPago = false;
+        }else{
+            this.estaPago = estaPago;
+        }
     }
 
     @Override
     public boolean tieneCafe() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'tieneCafe'");
+        if (productos == null) {
+            return false;
+        }
+        for (IProducto producto : productos) {
+            if (producto instanceof Cafe) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
