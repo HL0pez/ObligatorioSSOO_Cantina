@@ -15,12 +15,6 @@ public class CajaRegistradora implements IRecursoCompartido {
         this.cantidad = cantidad;
     }
 
-    @Override
-    public void atenderPedido(IPedido pedido) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'atenderPedido'");
-    }
-
     public int getCantidad() {
         return cantidad;
     }

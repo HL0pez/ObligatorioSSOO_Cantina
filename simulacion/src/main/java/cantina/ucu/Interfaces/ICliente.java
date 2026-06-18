@@ -8,4 +8,8 @@ import cantina.ucu.Implementaciones.Enums.Rol;
 public interface ICliente {
 
     public void hacerPedido(ICantina cantina,List<IProducto> productos, ICliente cliente, FuenteDePedido fuenteDePedido, boolean estaPago);
+
+    public int getPrioridad();
+
+    public int getPuntosFidelidad();
 }

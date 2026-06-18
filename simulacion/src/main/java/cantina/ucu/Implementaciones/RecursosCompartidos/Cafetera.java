@@ -15,12 +15,6 @@ public class Cafetera implements IRecursoCompartido {
         this.cantidad = slots;
     }
 
-    @Override
-    public void atenderPedido(IPedido pedido) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'atenderPedido'");
-    }
-
     public int getCantidad() {
         return cantidad;
     }

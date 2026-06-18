@@ -47,10 +47,21 @@ public class Pedido implements IPedido {
         return false;
     }
 
+    public int cantidadCafe(){
+        int i = 0;
+        for (IProducto producto : productos) {
+            if (producto instanceof Cafe) {
+                ++i;
+            }
+        }
+        return i;
+    }
+
     @Override
     public void calcularPrioridad() {
+        ++envejecimiento;
         // Prioridad = rol + fidelidad + (cantCafe * tieneCafe) + (tiempoDeEspera * factor envejecimiento)
-        
+        prioridad = (cliente.getPrioridad() + cliente.getPuntosFidelidad() + (this.cantidadCafe() * 2 ) + (envejecimiento * 2) );
     }
     
 }
