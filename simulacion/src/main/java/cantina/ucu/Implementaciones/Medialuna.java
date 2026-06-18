@@ -11,4 +11,12 @@ public class Medialuna implements IProducto {
         this.tiempoDePreparacion = tiempoDePreparacion;
         this.precio = precio;
     }
+
+    public Double getPrecio() {
+        return precio;
+    }
+
+    public Double getTiempoDePreparacion() {
+        return tiempoDePreparacion;
+    }
 }

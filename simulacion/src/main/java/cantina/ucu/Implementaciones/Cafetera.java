@@ -8,16 +8,26 @@ import cantina.ucu.Interfaces.IRecursoCompartido;
 
 public class Cafetera implements IRecursoCompartido {
 
-    Queue<IPedido> pendientes = null;
+    private Queue<IPedido> pendientes = null;
+    private int cantidad;
 
-    public Cafetera(){
+    public Cafetera(int slots){
         this.pendientes = new LinkedList<>();
+        this.cantidad = slots;
     }
 
     @Override
     public void atenderPedido(IPedido pedido) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'atenderPedido'");
+    }
+
+    public Queue<IPedido> getPendientes() {
+        return pendientes;
+    }
+
+    public int getCantidad() {
+        return cantidad;
     }
     
 }

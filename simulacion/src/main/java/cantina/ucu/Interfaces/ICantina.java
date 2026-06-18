@@ -18,5 +18,6 @@ public interface ICantina {
     public void procesarPedido();
     private void recalcularPrioridad() {
     }
+    public void agregarPedido(IPedido pedido);
 
 }
