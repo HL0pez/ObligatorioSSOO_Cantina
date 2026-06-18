@@ -2,7 +2,7 @@ package cantina.ucu.Interfaces;
 
 import java.util.List;
 
-import cantina.ucu.Implementaciones.FuenteDePedido;
+import cantina.ucu.Implementaciones.Enums.FuenteDePedido;
 
 public interface IPedido {
 

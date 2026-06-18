@@ -1,6 +1,6 @@
 package cantina.ucu.Interfaces;
 
-import cantina.ucu.Implementaciones.Rol;
+import cantina.ucu.Implementaciones.Enums.Rol;
 
 public interface ICliente {
     Rol rol = null;

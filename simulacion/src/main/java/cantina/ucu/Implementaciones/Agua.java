@@ -1,0 +1,14 @@
+package cantina.ucu.Implementaciones;
+
+import cantina.ucu.Interfaces.IProducto;
+
+public class Agua implements IProducto {
+    
+    private Double precio;
+    private Double tiempoDePreparacion;
+
+    public Agua(Double precio, Double tiempoDePreparacion){
+        this.tiempoDePreparacion = tiempoDePreparacion;
+        this.precio = precio;
+    }
+}
