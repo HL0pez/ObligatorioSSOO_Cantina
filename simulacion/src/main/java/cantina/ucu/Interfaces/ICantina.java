@@ -8,15 +8,6 @@ import java.util.concurrent.Semaphore;
 
 public interface ICantina {
 
-    IRecursoCompartido cafetera = null;
-    PriorityQueue<IPedido> pedidosPendientes = null;
-    IRecursoCompartido caja = null;
-    ArrayList<Runnable> baristas = null;
-    Stack<IPedido> pedidosCompletados = null;
-    Semaphore semaforoCaja = null;
-    Semaphore semaforoCafetera = null;
-    Semaphore semaforoBarista = null;
-
     public void procesarPedido();
     private void recalcularPrioridad() {
     }
