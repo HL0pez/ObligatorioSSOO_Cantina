@@ -19,6 +19,7 @@ public class Cantina implements ICantina {
     private Stack<IPedido> pedidosCompletados;
     private Semaphore semaforoCaja;
     private Semaphore semaforoCafetera;
+    private Semaphore semaforoBarista;
 
     public Cantina(Cafetera cafetera, CajaRegistradora cajaRegistradora, int cantidadBaristas){
 
@@ -32,6 +33,7 @@ public class Cantina implements ICantina {
         this.pedidosPendientes = new LinkedList<>();
         this.semaforoCafetera = new Semaphore(cafetera.getCantidad());
         this.semaforoCaja = new Semaphore(caja.getCantidad());
+        this.semaforoBarista = new Semaphore(cantidadBaristas);
         
     }
 
