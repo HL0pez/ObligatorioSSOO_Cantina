@@ -26,6 +26,19 @@ public class Cliente implements ICliente {
     public void hacerPedido(ICantina cantina, List<IProducto> productos, ICliente cliente, FuenteDePedido fuenteDePedido, boolean estaPago) {
         IPedido pedido = new Pedido(productos, cliente, fuenteDePedido, estaPago);
         cantina.agregarPedido(pedido);
+        ++puntosFidelidad;
+    }
+
+    public int getPrioridad() {
+        return prioridad;
+    }
+
+    public int getPuntosFidelidad() {
+        return puntosFidelidad;
+    }
+
+    public Rol getRol() {
+        return rol;
     }
     
 }

@@ -49,8 +49,8 @@ public class Pedido implements IPedido {
 
     @Override
     public void calcularPrioridad() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'calcularPrioridad'");
+        // Prioridad = rol + fidelidad + (cantCafe * tieneCafe) + (tiempoDeEspera * factor envejecimiento)
+        
     }
     
 }
