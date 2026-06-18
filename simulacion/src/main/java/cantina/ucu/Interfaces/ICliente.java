@@ -9,5 +9,5 @@ public interface ICliente {
     Rol rol = null;
     int puntosFidelidad = (Integer) null;
 
-    public IPedido hacerPedido(List<IProducto> productos, ICliente cliente, FuenteDePedido fuenteDePedido, boolean estaPago);
+    public void hacerPedido(ICantina cantina,List<IProducto> productos, ICliente cliente, FuenteDePedido fuenteDePedido, boolean estaPago);
 }
