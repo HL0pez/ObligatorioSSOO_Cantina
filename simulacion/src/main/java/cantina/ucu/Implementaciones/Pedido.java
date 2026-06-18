@@ -27,7 +27,7 @@ public class Pedido implements IPedido {
             this.precio += producto.getPrecio();
             this.tiempoDePreparacion += producto.getTiempoDePreparacion();
         }
-        if (fuenteDePedido == fuenteDePedido.MOSTRADOR) {
+        if (fuenteDePedido == FuenteDePedido.MOSTRADOR) {
             estaPago = false;
         }else{
             this.estaPago = estaPago;
@@ -47,7 +47,7 @@ public class Pedido implements IPedido {
         return false;
     }
 
-    public int cantidadCafe(){
+    private int cantidadCafe(){
         int i = 0;
         for (IProducto producto : productos) {
             if (producto instanceof Cafe) {
@@ -59,9 +59,41 @@ public class Pedido implements IPedido {
 
     @Override
     public void calcularPrioridad() {
-        ++envejecimiento;
         // Prioridad = rol + fidelidad + (cantCafe * tieneCafe) + (tiempoDeEspera * factor envejecimiento)
         prioridad = (cliente.getPrioridad() + cliente.getPuntosFidelidad() + (this.cantidadCafe() * 2 ) + (envejecimiento * 2) );
+        ++envejecimiento;
+    }
+
+    public List<IProducto> getProductos() {
+        return productos;
+    }
+
+    public ICliente getCliente() {
+        return cliente;
+    }
+
+    public Double getTiempoDePreparacion() {
+        return tiempoDePreparacion;
+    }
+
+    public FuenteDePedido getFuente() {
+        return fuente;
+    }
+
+    public boolean getEstaPago() {
+        return estaPago;
+    }
+
+    public Double getPrecio() {
+        return precio;
+    }
+
+    public int getEnvejecimiento() {
+        return envejecimiento;
+    }
+
+    public int getPrioridad() {
+        return prioridad;
     }
     
 }

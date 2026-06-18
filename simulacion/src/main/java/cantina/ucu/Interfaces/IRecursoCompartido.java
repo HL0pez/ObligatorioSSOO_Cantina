@@ -1,8 +1,10 @@
 package cantina.ucu.Interfaces;
 
-import java.util.Queue;
-
 public interface IRecursoCompartido {
 
     int getCantidad();
+
+    int getTiempoOcupada();
+
+    void setTiempoOcupada(int i);
 }

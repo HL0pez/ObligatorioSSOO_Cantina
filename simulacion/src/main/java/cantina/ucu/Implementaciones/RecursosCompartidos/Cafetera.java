@@ -1,9 +1,5 @@
 package cantina.ucu.Implementaciones.RecursosCompartidos;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
-import cantina.ucu.Interfaces.IPedido;
 import cantina.ucu.Interfaces.IRecursoCompartido;
 
 public class Cafetera implements IRecursoCompartido {
@@ -17,6 +13,15 @@ public class Cafetera implements IRecursoCompartido {
 
     public int getCantidad() {
         return cantidad;
+    }
+
+    public int getTiempoOcupada() {
+        return tiempoOcupada;
+    }
+
+
+    public void setTiempoOcupada(int tiempoOcupada) {
+        this.tiempoOcupada = tiempoOcupada;
     }
     
 }
