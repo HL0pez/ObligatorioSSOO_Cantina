@@ -1,4 +1,4 @@
-package cantina.ucu.Implementaciones;
+package cantina.ucu.Implementaciones.RecursosCompartidos;
 
 import java.util.LinkedList;
 import java.util.Queue;

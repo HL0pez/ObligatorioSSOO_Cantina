@@ -1,4 +1,4 @@
-package cantina.ucu.Implementaciones;
+package cantina.ucu.Implementaciones.Productos;
 
 import cantina.ucu.Interfaces.IProducto;
 

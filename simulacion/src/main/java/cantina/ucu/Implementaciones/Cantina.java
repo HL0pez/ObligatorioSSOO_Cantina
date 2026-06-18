@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.concurrent.Semaphore;
 
+import cantina.ucu.Implementaciones.RecursosCompartidos.Cafetera;
+import cantina.ucu.Implementaciones.RecursosCompartidos.CajaRegistradora;
 import cantina.ucu.Interfaces.ICantina;
 import cantina.ucu.Interfaces.IPedido;
 import cantina.ucu.Interfaces.IRecursoCompartido;
@@ -48,8 +50,7 @@ public class Cantina implements ICantina {
 
     @Override
     public void agregarPedido(IPedido pedido) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'agregarPedido'");
+        pedidosPendientes.add(pedido);
     }
     
 }
