@@ -5,15 +5,16 @@ import java.util.List;
 import cantina.ucu.Implementaciones.Enums.FuenteDePedido;
 import cantina.ucu.Implementaciones.Enums.Rol;
 import cantina.ucu.Interfaces.ICantina;
-import cantina.ucu.Interfaces.ICliente;
 import cantina.ucu.Interfaces.IPedido;
 import cantina.ucu.Interfaces.IProducto;
 
-public class Cliente implements ICliente {
+public class Cliente implements Runnable {
 
     private int prioridad;
     private int puntosFidelidad;
     private Rol rol;
+    private IPedido pedido;
+    private ICantina cantina;
 
     public Cliente(Rol rol){
         this.rol = rol;
@@ -22,11 +23,19 @@ public class Cliente implements ICliente {
         }
     }
     
-    @Override
-    public void hacerPedido(ICantina cantina, List<IProducto> productos, ICliente cliente, FuenteDePedido fuenteDePedido, boolean estaPago) {
-        IPedido pedido = new Pedido(productos, cliente, fuenteDePedido, estaPago);
+    public void hacerPedido(IPedido pedido) {
+        for (IPedido p : cantina.getPedidosPendientes()) {
+            if (p.getCliente() == this) {
+                break;
+            }
+        }
         cantina.agregarPedido(pedido);
         ++puntosFidelidad;
+    }
+    
+    public void hacerPedido(ICantina cantina, List<IProducto> productos, FuenteDePedido fuenteDePedido, boolean estaPago) {
+        this.pedido = new Pedido(productos, this , fuenteDePedido, estaPago);
+        this.cantina = cantina;
     }
 
     public int getPrioridad() {
@@ -39,6 +48,13 @@ public class Cliente implements ICliente {
 
     public Rol getRol() {
         return rol;
+    }
+
+    @Override
+    public void run() {
+        if (pedido != null) {
+            hacerPedido(pedido);// Hacer concurrente y repetitivo
+        }
     }
     
 }

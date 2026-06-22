@@ -5,9 +5,9 @@ import cantina.ucu.Interfaces.IProducto;
 public class Agua implements IProducto {
     
     private Double precio;
-    private Double tiempoDePreparacion;
+    private int tiempoDePreparacion;
 
-    public Agua(Double precio, Double tiempoDePreparacion){
+    public Agua(Double precio, int tiempoDePreparacion){
         this.tiempoDePreparacion = tiempoDePreparacion;
         this.precio = precio;
     }
@@ -16,7 +16,7 @@ public class Agua implements IProducto {
         return precio;
     }
 
-    public Double getTiempoDePreparacion() {
+    public int getTiempoDePreparacion() {
         return tiempoDePreparacion;
     }
 }

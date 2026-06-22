@@ -1,5 +1,6 @@
 package cantina.ucu.Interfaces;
 
+
 public interface IRecursoCompartido {
 
     int getCantidad();
@@ -7,4 +8,7 @@ public interface IRecursoCompartido {
     int getTiempoOcupada();
 
     void setTiempoOcupada(int i);
+
+    int atender(IPedido pedido);
+
 }

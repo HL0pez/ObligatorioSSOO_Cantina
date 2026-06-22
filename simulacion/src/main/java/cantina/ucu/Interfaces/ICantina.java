@@ -2,8 +2,9 @@ package cantina.ucu.Interfaces;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Stack;
-import java.util.concurrent.Semaphore;
+
+import cantina.ucu.Implementaciones.RecursosCompartidos.Cafetera;
+import cantina.ucu.Implementaciones.RecursosCompartidos.CajaRegistradora;
 
 public interface ICantina {
 
@@ -12,19 +13,14 @@ public interface ICantina {
     public void agregarPedido(IPedido pedido);
 
 
-    public IRecursoCompartido getCafetera();
+    public Cafetera getCafetera();
 
     public PriorityQueue<IPedido> getPedidosPendientes();
 
-    public IRecursoCompartido getCaja();
+    public CajaRegistradora getCaja();
 
     public Queue<Runnable> getBaristas();
 
-    public Stack<IPedido> getPedidosCompletados();
+    public void recalcularPrioridad();
 
-    public Semaphore getSemaforoCaja();
-
-    public Semaphore getSemaforoCafetera();
-
-    public Semaphore getSemaforoBarista();
 }

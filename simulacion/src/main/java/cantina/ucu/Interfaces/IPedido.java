@@ -2,6 +2,8 @@ package cantina.ucu.Interfaces;
 
 import java.util.List;
 
+import cantina.ucu.Implementaciones.Cliente;
+
 
 public interface IPedido {
 
@@ -9,4 +11,5 @@ public interface IPedido {
     public void calcularPrioridad();
     public List<IProducto> getProductos();
     public boolean getEstaPago();
+    public Cliente getCliente();
 }

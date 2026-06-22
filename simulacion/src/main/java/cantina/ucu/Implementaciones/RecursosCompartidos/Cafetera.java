@@ -1,27 +1,59 @@
 package cantina.ucu.Implementaciones.RecursosCompartidos;
 
+import java.util.concurrent.Semaphore;
+
+import cantina.ucu.Implementaciones.Metricas;
+import cantina.ucu.Implementaciones.Productos.Cafe;
+import cantina.ucu.Interfaces.IPedido;
+import cantina.ucu.Interfaces.IProducto;
 import cantina.ucu.Interfaces.IRecursoCompartido;
 
 public class Cafetera implements IRecursoCompartido {
 
-    private int cantidad;
+    private final int cantidad;
     private int tiempoOcupada;
-    
-    public Cafetera(int slots){
+    private Semaphore semaforoCafetera;
+    private Metricas metricas;
+
+
+    public Cafetera(int slots) {
         this.cantidad = slots;
+        this.semaforoCafetera = new Semaphore(slots);
+    }
+
+
+    public int atender(IPedido pedido){
+        int tiempoCafe = 0;
+        try {
+            semaforoCafetera.acquire();  
+
+            for (IProducto producto : pedido.getProductos()) {
+                if (producto instanceof Cafe) {
+                    tiempoCafe += producto.getTiempoDePreparacion();
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        semaforoCafetera.release();
+
+
+        return tiempoCafe;
     }
 
     public int getCantidad() {
         return cantidad;
     }
 
-    public int getTiempoOcupada() {
+    public synchronized int getTiempoOcupada() {
         return tiempoOcupada;
     }
 
-
-    public void setTiempoOcupada(int tiempoOcupada) {
+    public synchronized void setTiempoOcupada(int tiempoOcupada) {
         this.tiempoOcupada = tiempoOcupada;
     }
     
+    public Semaphore getSemaforo() {
+        return semaforoCafetera;
+    }
 }

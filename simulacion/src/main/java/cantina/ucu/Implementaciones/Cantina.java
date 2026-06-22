@@ -1,27 +1,20 @@
 package cantina.ucu.Implementaciones;
 
 import java.util.Queue;
-import java.util.Stack;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
-import java.util.concurrent.Semaphore;
 
 import cantina.ucu.Implementaciones.RecursosCompartidos.Cafetera;
 import cantina.ucu.Implementaciones.RecursosCompartidos.CajaRegistradora;
 import cantina.ucu.Interfaces.ICantina;
 import cantina.ucu.Interfaces.IPedido;
-import cantina.ucu.Interfaces.IRecursoCompartido;
 
 public class Cantina implements ICantina {
 
-    private IRecursoCompartido cafetera;
+    private Cafetera cafetera;
     private PriorityQueue<IPedido> pedidosPendientes;
-    private IRecursoCompartido caja;
-    private Queue<Runnable> baristas;
-    private Stack<IPedido> pedidosCompletados;
-    private Semaphore semaforoCaja;
-    private Semaphore semaforoCafetera;
-    private Semaphore semaforoBarista;
+    private CajaRegistradora caja;
+    private Queue<Runnable> baristas;   // chau?
 
     public Cantina(Cafetera cafetera, CajaRegistradora cajaRegistradora, int cantidadBaristas){
 
@@ -31,47 +24,36 @@ public class Cantina implements ICantina {
         for (int i = 0; i < cantidadBaristas; i++) {
             baristas.add(new Barista(this));
         }
-        this.pedidosCompletados = new Stack<>();
         this.pedidosPendientes = new PriorityQueue<>();
-        this.semaforoCafetera = new Semaphore(cafetera.getCantidad());
-        this.semaforoCaja = new Semaphore(caja.getCantidad());
-        this.semaforoBarista = new Semaphore(cantidadBaristas);
-        
     }
 
     @Override
     public void procesarPedido() {
-        /*  adquiere semaforoBarista
+        /*  
             procesa el pedido con más prioridad con el run de barista
-            libera semaforoBarista
         */
-        try {
-            semaforoBarista.acquire();
-            IPedido pedido = pedidosPendientes.poll();
-            Barista barista = (Barista) baristas.poll();
-            barista.setPedido(pedido);
-            barista.run();
-            semaforoBarista.release();
-            recalcularPrioridad();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (pedidosPendientes.isEmpty()) {
+            try {
+                pedidosPendientes.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+        pedidosPendientes.notifyAll();
     }
 
     @Override
     public void agregarPedido(IPedido pedido) {
-        pedidosPendientes.add(pedido);
+        pedidosPendientes.add(pedido); // agregar con PRIORIDAD
     }
 
-    private void recalcularPrioridad() {
+    public void recalcularPrioridad() {
         for (IPedido pedido : pedidosPendientes) {
             pedido.calcularPrioridad();
         }
     }
     
-
-    
-    public IRecursoCompartido getCafetera() {
+    public Cafetera getCafetera() {
         return cafetera;
     }
 
@@ -79,7 +61,7 @@ public class Cantina implements ICantina {
         return pedidosPendientes;
     }
 
-    public IRecursoCompartido getCaja() {
+    public CajaRegistradora getCaja() {
         return caja;
     }
 
@@ -87,21 +69,4 @@ public class Cantina implements ICantina {
         return baristas;
     }
 
-    public Stack<IPedido> getPedidosCompletados() {
-        return pedidosCompletados;
-    }
-
-    public Semaphore getSemaforoCaja() {
-        return semaforoCaja;
-    }
-
-    public Semaphore getSemaforoCafetera() {
-        return semaforoCafetera;
-    }
-
-    public Semaphore getSemaforoBarista() {
-        return semaforoBarista;
-    }
-
-    
 }
