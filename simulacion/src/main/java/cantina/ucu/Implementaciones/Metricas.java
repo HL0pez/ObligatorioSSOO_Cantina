@@ -11,13 +11,20 @@ public final class Metricas {
     private Queue<IPedido> pedidosSinAtender;
     private double promedioTiempoTotalPedidos;
     private double promedioTiempoEnEsperaPedidos;
+<<<<<<< HEAD
     private static Metricas instancia = null;
     
+=======
+    private static Metricas metricas;
+    
+    //Hacer singleton
+>>>>>>> 7cf90c79438e0c2fb9e451d10971e893175ef1b8
     private Metricas() {
         this.pedidosCompletados = new LinkedList<IPedido>();
         this.tiempoCafeteraOcupada = 0;
         this.pedidosSinAtender = new LinkedList<IPedido>();
         this.promedioTiempoTotalPedidos = 0.0;
+<<<<<<< HEAD
         this.promedioTiempoEnEsperaPedidos  = 0.0;
     }
 
@@ -29,6 +36,18 @@ public final class Metricas {
     }
 
 
+=======
+        this.promedioTiempoEnEsperaPedidos = 0.0;
+    }
+
+    public static Metricas getMetricas() {
+        if (metricas == null) {
+            metricas = new Metricas();
+        }
+        return metricas;
+    }
+
+>>>>>>> 7cf90c79438e0c2fb9e451d10971e893175ef1b8
     // Hacer metodos de metricas
 
     
