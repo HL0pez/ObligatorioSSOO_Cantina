@@ -13,12 +13,13 @@ public class Cafetera implements IRecursoCompartido {
     private final int cantidad;
     private int tiempoOcupada;
     private Semaphore semaforoCafetera;
-    private Metricas metricas;
+    private final Metricas metricas;
 
 
     public Cafetera(int slots) {
         this.cantidad = slots;
         this.semaforoCafetera = new Semaphore(slots);
+        this.metricas = Metricas.getInstancia();
     }
 
 

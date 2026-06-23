@@ -1,7 +1,7 @@
 package cantina.ucu.Implementaciones;
 
-import java.util.Queue;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import cantina.ucu.Implementaciones.RecursosCompartidos.Cafetera;
@@ -14,37 +14,43 @@ public class Cantina implements ICantina {
     private Cafetera cafetera;
     private PriorityQueue<IPedido> pedidosPendientes;
     private CajaRegistradora caja;
-    private Queue<Runnable> baristas;   // chau?
+    private List<Thread> baristas = new LinkedList<>();
 
     public Cantina(Cafetera cafetera, CajaRegistradora cajaRegistradora, int cantidadBaristas){
 
         this.cafetera = cafetera;
         this.caja = cajaRegistradora;
-        this.baristas = new LinkedList<>();
         for (int i = 0; i < cantidadBaristas; i++) {
-            baristas.add(new Barista(this));
+            Thread hiloBarista = new Thread(new Barista(this),"Barista: " + (i + 1));
+            baristas.add(hiloBarista);
         }
         this.pedidosPendientes = new PriorityQueue<>();
     }
 
     @Override
-    public void procesarPedido() {
+    public IPedido procesarPedido() {
         /*  
             procesa el pedido con más prioridad con el run de barista
         */
-        while (pedidosPendientes.isEmpty()) {
-            try {
-                pedidosPendientes.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        synchronized(pedidosPendientes){
+            while (pedidosPendientes.isEmpty()) {
+                try {
+                    pedidosPendientes.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        pedidosPendientes.notifyAll();
+      return pedidosPendientes.poll();
     }
 
     @Override
     public void agregarPedido(IPedido pedido) {
-        pedidosPendientes.add(pedido); // agregar con PRIORIDAD
+        synchronized (pedidosPendientes) {
+            pedido.calcularPrioridad();
+            pedidosPendientes.add(pedido);
+            pedidosPendientes.notifyAll();
+        }
     }
 
     public void recalcularPrioridad() {
@@ -65,7 +71,7 @@ public class Cantina implements ICantina {
         return caja;
     }
 
-    public Queue<Runnable> getBaristas() {
+    public List<Thread> getBaristas() {
         return baristas;
     }
 

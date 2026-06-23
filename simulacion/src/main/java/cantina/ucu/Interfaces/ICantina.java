@@ -1,14 +1,14 @@
 package cantina.ucu.Interfaces;
 
+import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Queue;
 
 import cantina.ucu.Implementaciones.RecursosCompartidos.Cafetera;
 import cantina.ucu.Implementaciones.RecursosCompartidos.CajaRegistradora;
 
 public interface ICantina {
 
-    public void procesarPedido();
+    public IPedido procesarPedido();
 
     public void agregarPedido(IPedido pedido);
 
@@ -19,7 +19,7 @@ public interface ICantina {
 
     public CajaRegistradora getCaja();
 
-    public Queue<Runnable> getBaristas();
+    public List<Thread> getBaristas();
 
     public void recalcularPrioridad();
 

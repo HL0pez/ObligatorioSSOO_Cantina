@@ -11,10 +11,10 @@ public class Pedido implements IPedido {
 
     private List<IProducto> productos;
     private Cliente cliente;
-    private Double tiempoDePreparacion;
+    private int tiempoDePreparacion = 0;
     private FuenteDePedido fuente;
     private boolean estaPago;
-    private Double precio;
+    private Double precio = 0.0;
     private int envejecimiento;
     private int prioridad;
 
@@ -27,7 +27,7 @@ public class Pedido implements IPedido {
             this.tiempoDePreparacion += producto.getTiempoDePreparacion();
         }
         if (fuenteDePedido == FuenteDePedido.MOSTRADOR) {
-            estaPago = false;
+            this.estaPago = false;
         }else{
             this.estaPago = estaPago;
         }
@@ -63,6 +63,34 @@ public class Pedido implements IPedido {
         ++envejecimiento;
     }
 
+    @Override
+    public int compareTo(IPedido otroPedido) {
+        
+        int comparacionPrioridad = Integer.compare(otroPedido.getPrioridad(),this.getPrioridad());
+
+        if (comparacionPrioridad != 0) {
+            return comparacionPrioridad;
+        }else{
+            
+            int comparacionTiempo = Integer.compare(this.getTiempoDePreparacion(),otroPedido.getTiempoDePreparacion());
+            
+            if (comparacionTiempo != 0) {
+                return comparacionTiempo;
+            }else{
+                
+                int comparacionCantidad =  Integer.compare(this.getProductos().size(), otroPedido.getProductos().size());
+                
+                if (comparacionCantidad != 0) {
+                    return comparacionCantidad;
+                }else{
+                    return //orden llegada
+                }
+            }
+        }
+    }
+
+
+
     public List<IProducto> getProductos() {
         return productos;
     }
@@ -71,7 +99,7 @@ public class Pedido implements IPedido {
         return cliente;
     }
 
-    public Double getTiempoDePreparacion() {
+    public int getTiempoDePreparacion() {
         return tiempoDePreparacion;
     }
 
