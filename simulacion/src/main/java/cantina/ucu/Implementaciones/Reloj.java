@@ -16,7 +16,7 @@ public class Reloj implements Runnable{
         try {
             Thread.sleep(tiempo * 1000);
             cantina.cerrar();
-            System.out.println("Ya cerramos! Volvé pronto");
+            System.out.println("Ya cerramos! No admitimos mas pedidos. volvé pronto!!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

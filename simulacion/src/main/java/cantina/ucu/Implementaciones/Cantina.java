@@ -22,7 +22,7 @@ public class Cantina implements ICantina {
         this.cafetera = cafetera;
         this.caja = cajaRegistradora;
         for (int i = 0; i < cantidadBaristas; i++) {
-            Thread hiloBarista = new Thread(new Barista(this),"Barista: " + (i + 1));
+            Thread hiloBarista = new Thread(new Barista(this),"Barista-" + (i + 1));
             baristas.add(hiloBarista);
         }
         this.pedidosPendientes = new PriorityQueue<>();

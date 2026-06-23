@@ -21,10 +21,10 @@ public class Main {
 
         Metricas metricas = Metricas.getInstancia();
 
-        IProducto awita = new Agua(5);
-        IProducto cortadito = new Cafe(3);
-        IProducto medialunita = new Medialuna(2);
-        IProducto capuchin = new Cafe(4);
+        IProducto awita = new Agua(2);
+        IProducto cortadito = new Cafe(5);
+        IProducto medialunita = new Medialuna(4);
+        IProducto capuchin = new Cafe(7);
 
         IRecursoCompartido cafetera = new Cafetera(2);
         IRecursoCompartido caja = new CajaRegistradora(1);
@@ -85,13 +85,9 @@ public class Main {
         cantinaCUCU.simulacion(30);
         
         // implementar join
+        // puntos fidelidad
 
         metricas.imprimirMetricas();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
 
     }
 }

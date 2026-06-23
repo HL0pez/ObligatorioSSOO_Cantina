@@ -8,7 +8,7 @@ import cantina.ucu.Interfaces.ICantina;
 import cantina.ucu.Interfaces.IPedido;
 import cantina.ucu.Interfaces.IProducto;
 
-public class Cliente implements Runnable {
+public class Cliente extends Thread {
 
     private int prioridad;
     private int puntosFidelidad;

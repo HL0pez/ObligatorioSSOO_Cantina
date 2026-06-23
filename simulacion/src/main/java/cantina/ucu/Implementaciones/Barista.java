@@ -10,7 +10,7 @@ import cantina.ucu.Interfaces.IPedido;
 import cantina.ucu.Interfaces.IProducto;
 import cantina.ucu.Interfaces.IRecursoCompartido;
 
-public class Barista implements Runnable {
+public class Barista extends Thread {
 
     private ICantina cantina;
 
@@ -22,15 +22,15 @@ public class Barista implements Runnable {
         if (pedido.tieneCafe()) {
                 IRecursoCompartido cafetera = cantina.getCafetera();
                 try {
-                    System.out.println(this + " ocupa cafetera");
+                    System.out.println(Thread.currentThread().getName() + " ocupa un slot de la cafetera");
                     int tiempoCafe = cafetera.atender(pedido);
+                    System.out.println(Thread.currentThread().getName() + " usa el slot por " + tiempoCafe + " segundos");
                     Thread.sleep(tiempoCafe * 1000);
-                    System.out.println(this + " usa la cafetera por " + tiempoCafe + " segundos");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }finally{
                     ((Cafetera) cafetera).getSemaforo().release();
-                    System.out.println(this + " libera cafetera");
+                    System.out.println(Thread.currentThread().getName() + " libera el slot de la cafetera");
                 }
             }
 
@@ -42,8 +42,8 @@ public class Barista implements Runnable {
             }
 
             try {
+                System.out.println(Thread.currentThread().getName() + " prepara el resto del pedido en " + tiempoDePreparacion + " segundos");
                 Thread.sleep(tiempoDePreparacion * 1000);
-                System.out.println(this + " prepara el resto del pedido en " + tiempoDePreparacion + " segundos");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -53,13 +53,13 @@ public class Barista implements Runnable {
                 Lock mutex = caja.getMutex();
 
                 mutex.lock();
-                System.out.println(this + " ocupa caja");
                 try {
+                    System.out.println(Thread.currentThread().getName() + " ocupa caja");
                     int cantidadProductos = caja.atender(pedido);
+                    System.out.println(Thread.currentThread().getName() + " usa caja por " + cantidadProductos + " segundos");
                     Thread.sleep(cantidadProductos * 2000);
-                    System.out.println(this + " usa caja por " + cantidadProductos + " segundos");
                 } finally {
-                    System.out.println(this + " libera la caja");
+                    System.out.println(Thread.currentThread().getName() + " libera la caja");
                     mutex.unlock();
                 }
             }
@@ -80,7 +80,7 @@ public class Barista implements Runnable {
                 }
 
                 prepararPedido(pedido);
-                System.out.println(this + " preparó pedido " + pedido.getId());
+                System.out.println(Thread.currentThread().getName() + " preparó pedido " + pedido.getId() + " del cliente " + pedido.getCliente().getName());
                 }
                 
             } catch (InterruptedException e) {
