@@ -17,7 +17,7 @@ public final class Metricas {
     private final Lock mutexTiempo = new ReentrantLock();
     private final Lock mutexPedidos = new ReentrantLock();
     private final Lock mutexPromedios = new ReentrantLock(); 
-
+    
     
     private Metricas() {
         this.pedidosCompletados = new LinkedList<IPedido>();
@@ -36,6 +36,29 @@ public final class Metricas {
 
 
     // Hacer metodos de metricas
+
+    public void imprimirMetricas(){
+        imprimirPendientes();
+        imprimirPromedioTiempoEnEsperaPedidos();
+        imprimirPromedioTiempoTotalPedidos();
+        imprimirTiempoCafeteraOcupada();
+    }
+
+    private void imprimirTiempoCafeteraOcupada(){
+        System.out.println("La cafetera estuco ocupada " + tiempoCafeteraOcupada + " segundos");
+    }
+
+    private void imprimirPromedioTiempoTotalPedidos() {
+      //TODO: 
+    }
+
+    private void imprimirPromedioTiempoEnEsperaPedidos() {
+      //TODO: 
+    }
+
+    private void imprimirPendientes() {
+        System.out.println("Quedaron " + pedidosSinAtender.size() + " pedidos sin atender");
+    }
 
     public void agregarTiempoCafeteraOcupada(int tiempo){
         mutexTiempo.lock();

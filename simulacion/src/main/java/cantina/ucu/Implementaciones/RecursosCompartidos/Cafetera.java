@@ -36,8 +36,6 @@ public class Cafetera implements IRecursoCompartido {
             e.printStackTrace();
         }
         metricas.agregarTiempoCafeteraOcupada(tiempoCafe);
-        semaforoCafetera.release();
-
 
         return tiempoCafe;
     }

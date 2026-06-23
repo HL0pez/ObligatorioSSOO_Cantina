@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import cantina.ucu.Implementaciones.Cantina;
 import cantina.ucu.Implementaciones.Cliente;
+import cantina.ucu.Implementaciones.Metricas;
 import cantina.ucu.Implementaciones.Enums.FuenteDePedido;
 import cantina.ucu.Implementaciones.Enums.Rol;
 import cantina.ucu.Implementaciones.Productos.Agua;
@@ -17,6 +18,9 @@ import cantina.ucu.Interfaces.IRecursoCompartido;
 
 public class Main {
     public static void main(String[] args) {
+
+        Metricas metricas = Metricas.getInstancia();
+
         IProducto awita = new Agua(5);
         IProducto cortadito = new Cafe(3);
         IProducto medialunita = new Medialuna(2);
@@ -79,7 +83,10 @@ public class Main {
 
         System.out.println("Iniciando simulación...");
         cantinaCUCU.simulacion(30);
+        
+        // implementar join
 
+        metricas.imprimirMetricas();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
