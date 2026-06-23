@@ -11,7 +11,6 @@ import cantina.ucu.Interfaces.IRecursoCompartido;
 public class Cafetera implements IRecursoCompartido {
 
     private final int cantidad;
-    private int tiempoOcupada;
     private Semaphore semaforoCafetera;
     private final Metricas metricas;
 
@@ -36,6 +35,7 @@ public class Cafetera implements IRecursoCompartido {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        metricas.agregarTiempoCafeteraOcupada(tiempoCafe);
         semaforoCafetera.release();
 
 
@@ -44,14 +44,6 @@ public class Cafetera implements IRecursoCompartido {
 
     public int getCantidad() {
         return cantidad;
-    }
-
-    public synchronized int getTiempoOcupada() {
-        return tiempoOcupada;
-    }
-
-    public synchronized void setTiempoOcupada(int tiempoOcupada) {
-        this.tiempoOcupada = tiempoOcupada;
     }
     
     public Semaphore getSemaforo() {

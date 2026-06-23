@@ -14,4 +14,5 @@ public interface IPedido extends Comparable<IPedido> {
     public Cliente getCliente();
     public int getPrioridad();
     public int getTiempoDePreparacion();
+    public int getId();
 }

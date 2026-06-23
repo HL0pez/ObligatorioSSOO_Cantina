@@ -22,18 +22,14 @@ public class Cliente implements Runnable {
             this.prioridad = 5;
         }
     }
-    
-    public void hacerPedido(IPedido pedido) {
-        for (IPedido p : cantina.getPedidosPendientes()) {
-            if (p.getCliente() == this) {
-                break;
-            }
-        }
+    /*es privado porque  es el que corre después de hscer .start() */
+    private void registrarPedido(IPedido pedido) {
         cantina.agregarPedido(pedido);
         ++puntosFidelidad;
     }
-    
-    public void hacerPedido(ICantina cantina, List<IProducto> productos, FuenteDePedido fuenteDePedido, boolean estaPago) {
+
+    /*este es el que se usa en el main,  */
+    public void crearPedido(ICantina cantina, List<IProducto> productos, FuenteDePedido fuenteDePedido, boolean estaPago) {
         this.pedido = new Pedido(productos, this , fuenteDePedido, estaPago);
         this.cantina = cantina;
     }
@@ -52,8 +48,8 @@ public class Cliente implements Runnable {
 
     @Override
     public void run() {
-        if (pedido != null) {
-            hacerPedido(pedido);// Hacer concurrente y repetitivo
+        if (pedido != null && cantina.estaAbierta()) {
+            registrarPedido(pedido);
         }
     }
     

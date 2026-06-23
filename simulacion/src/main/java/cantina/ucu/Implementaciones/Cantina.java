@@ -4,20 +4,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import cantina.ucu.Implementaciones.RecursosCompartidos.Cafetera;
-import cantina.ucu.Implementaciones.RecursosCompartidos.CajaRegistradora;
 import cantina.ucu.Interfaces.ICantina;
 import cantina.ucu.Interfaces.IPedido;
+import cantina.ucu.Interfaces.IRecursoCompartido;
 
 public class Cantina implements ICantina {
 
-    private Cafetera cafetera;
+    private IRecursoCompartido cafetera;
     private PriorityQueue<IPedido> pedidosPendientes;
-    private CajaRegistradora caja;
+    private IRecursoCompartido caja;
     private List<Thread> baristas = new LinkedList<>();
+    private boolean abierta = false;
+    private Thread reloj;
 
-    public Cantina(Cafetera cafetera, CajaRegistradora cajaRegistradora, int cantidadBaristas){
-
+    public Cantina(IRecursoCompartido cafetera, IRecursoCompartido cajaRegistradora, int cantidadBaristas){
         this.cafetera = cafetera;
         this.caja = cajaRegistradora;
         for (int i = 0; i < cantidadBaristas; i++) {
@@ -40,26 +40,52 @@ public class Cantina implements ICantina {
                     e.printStackTrace();
                 }
             }
+            return pedidosPendientes.poll();
         }
-      return pedidosPendientes.poll();
     }
 
     @Override
     public void agregarPedido(IPedido pedido) {
-        synchronized (pedidosPendientes) {
-            pedido.calcularPrioridad();
-            pedidosPendientes.add(pedido);
-            pedidosPendientes.notifyAll();
+        if (abierta) {
+            synchronized (pedidosPendientes) {
+                pedido.calcularPrioridad();
+                pedidosPendientes.add(pedido);
+                pedidosPendientes.notifyAll();
+            }    
         }
     }
 
     public void recalcularPrioridad() {
-        for (IPedido pedido : pedidosPendientes) {
-            pedido.calcularPrioridad();
+        synchronized (pedidosPendientes) {
+            for (IPedido pedido : pedidosPendientes) {
+                pedido.calcularPrioridad();
+            }
         }
     }
+
+    public void simulacion(int segundos){
+        this.reloj = new Thread(new Reloj(segundos, this));
+        reloj.start();
+    }
+
+    public boolean estaAbierta() {
+        return this.abierta;
+    }
     
-    public Cafetera getCafetera() {
+    public void cerrar() {
+        this.abierta = false;
+    }
+
+    public void abrir() {
+        this.abierta = true;
+        for (Thread barista : baristas) {
+            if (!barista.isAlive()) {
+                barista.start();
+            }
+        }
+    }
+
+    public IRecursoCompartido getCafetera() {
         return cafetera;
     }
 
@@ -67,7 +93,7 @@ public class Cantina implements ICantina {
         return pedidosPendientes;
     }
 
-    public CajaRegistradora getCaja() {
+    public IRecursoCompartido getCaja() {
         return caja;
     }
 

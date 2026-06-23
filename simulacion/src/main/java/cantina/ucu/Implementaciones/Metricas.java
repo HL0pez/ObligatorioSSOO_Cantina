@@ -2,6 +2,8 @@ package cantina.ucu.Implementaciones;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import cantina.ucu.Interfaces.IPedido;
 
@@ -11,20 +13,17 @@ public final class Metricas {
     private Queue<IPedido> pedidosSinAtender;
     private double promedioTiempoTotalPedidos;
     private double promedioTiempoEnEsperaPedidos;
-<<<<<<< HEAD
     private static Metricas instancia = null;
+    private final Lock mutexTiempo = new ReentrantLock();
+    private final Lock mutexPedidos = new ReentrantLock();
+    private final Lock mutexPromedios = new ReentrantLock(); 
+
     
-=======
-    private static Metricas metricas;
-    
-    //Hacer singleton
->>>>>>> 7cf90c79438e0c2fb9e451d10971e893175ef1b8
     private Metricas() {
         this.pedidosCompletados = new LinkedList<IPedido>();
         this.tiempoCafeteraOcupada = 0;
         this.pedidosSinAtender = new LinkedList<IPedido>();
         this.promedioTiempoTotalPedidos = 0.0;
-<<<<<<< HEAD
         this.promedioTiempoEnEsperaPedidos  = 0.0;
     }
 
@@ -36,35 +35,56 @@ public final class Metricas {
     }
 
 
-=======
-        this.promedioTiempoEnEsperaPedidos = 0.0;
-    }
-
-    public static Metricas getMetricas() {
-        if (metricas == null) {
-            metricas = new Metricas();
-        }
-        return metricas;
-    }
-
->>>>>>> 7cf90c79438e0c2fb9e451d10971e893175ef1b8
     // Hacer metodos de metricas
 
+    public void agregarTiempoCafeteraOcupada(int tiempo){
+        mutexTiempo.lock();
+        try {
+            this.tiempoCafeteraOcupada += tiempo;
+        } finally {
+            mutexTiempo.unlock();
+        }
+    }
     
     public Queue<IPedido> getPedidosCompletados() {
-        return pedidosCompletados;
+        mutexPedidos.lock();
+        try {
+            return pedidosCompletados;
+        } finally {
+            mutexPedidos.unlock();
+        }
     }
     public int getTiempoCafeteraOcupada() {
-        return tiempoCafeteraOcupada;
+        mutexTiempo.lock();
+        try {
+            return tiempoCafeteraOcupada;
+        } finally {
+            mutexTiempo.unlock();
+        }
     }
     public Queue<IPedido> getPedidosSinAtender() {
-        return pedidosSinAtender;
+        mutexPedidos.lock();
+        try {
+            return pedidosSinAtender;
+        } finally {
+            mutexPedidos.unlock();
+        }
     }
     public double getPromedioTiempoTotalPedidos() {
-        return promedioTiempoTotalPedidos;
+        mutexPromedios.lock();
+        try {
+            return promedioTiempoTotalPedidos;
+        } finally {
+            mutexPromedios.unlock();
+        }
     }
     public double getPromedioTiempoEnEsperaPedidos() {
-        return promedioTiempoEnEsperaPedidos;
+        mutexPromedios.lock();
+        try {
+            return promedioTiempoEnEsperaPedidos;
+        } finally {
+            mutexPromedios.unlock();
+        }
     }
 
 

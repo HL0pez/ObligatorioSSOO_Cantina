@@ -23,9 +23,9 @@ public class Barista implements Runnable {
                     IRecursoCompartido cafetera = cantina.getCafetera();
 
                     int tiempoCafe = cafetera.atender(pedido);
+                    System.out.println(this + " usa cafetera");
                     Thread.sleep(tiempoCafe * 1000);
 
-                    cantina.getCafetera().setTiempoOcupada(cantina.getCafetera().getTiempoOcupada() + tiempoCafe);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -45,46 +45,39 @@ public class Barista implements Runnable {
             }
 
             if (!pedido.getEstaPago()) {
-                CajaRegistradora caja = cantina.getCaja();
-                
+                CajaRegistradora caja = (CajaRegistradora) cantina.getCaja();
                 Lock mutex = caja.getMutex();
 
-                while (!mutex.tryLock()) {
-                    try {
-                        mutex.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                int cantidadProductos = caja.atender(pedido);
-
+                mutex.lock();
                 try {
+                    int cantidadProductos = caja.atender(pedido);
                     Thread.sleep(cantidadProductos * 2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    System.out.println(this + " usa caja");
+                } finally {
+                    mutex.unlock();
                 }
-                mutex.unlock(); 
             }
+
         cantina.recalcularPrioridad();
     }   
 
 
     @Override
     public void run() {
-        /*
-
-        */
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                IPedido pedido = cantina.procesarPedido();
+                if (cantina.estaAbierta()) {
+                    IPedido pedido = cantina.procesarPedido();
 
                 if (pedido == null) {
                     break;
                 }
 
                 prepararPedido(pedido);
+                System.out.println(this + " preparó pedido " + pedido.getId());
 
+                }
+                
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;

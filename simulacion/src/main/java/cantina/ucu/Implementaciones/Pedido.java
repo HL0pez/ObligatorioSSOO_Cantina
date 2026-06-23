@@ -14,16 +14,16 @@ public class Pedido implements IPedido {
     private int tiempoDePreparacion = 0;
     private FuenteDePedido fuente;
     private boolean estaPago;
-    private Double precio = 0.0;
     private int envejecimiento;
     private int prioridad;
+    private static int contadorId;
+    private int id;
 
     public Pedido(List<IProducto> productos, Cliente cliente, FuenteDePedido fuenteDePedido, boolean estaPago){
         this.productos = productos;
         this.cliente = cliente;
         this.fuente = fuenteDePedido;
         for (IProducto producto : productos) {
-            this.precio += producto.getPrecio();
             this.tiempoDePreparacion += producto.getTiempoDePreparacion();
         }
         if (fuenteDePedido == FuenteDePedido.MOSTRADOR) {
@@ -31,6 +31,7 @@ public class Pedido implements IPedido {
         }else{
             this.estaPago = estaPago;
         }
+        this.id = ++contadorId;
     }
 
     @Override
@@ -71,25 +72,10 @@ public class Pedido implements IPedido {
         if (comparacionPrioridad != 0) {
             return comparacionPrioridad;
         }else{
-            
-            int comparacionTiempo = Integer.compare(this.getTiempoDePreparacion(),otroPedido.getTiempoDePreparacion());
-            
-            if (comparacionTiempo != 0) {
-                return comparacionTiempo;
-            }else{
-                
-                int comparacionCantidad =  Integer.compare(this.getProductos().size(), otroPedido.getProductos().size());
-                
-                if (comparacionCantidad != 0) {
-                    return comparacionCantidad;
-                }else{
-                    return //orden llegada
-                }
-            }
+            int comparacionId = Integer.compare(this.getId(), otroPedido.getId());
+            return comparacionId;
         }
     }
-
-
 
     public List<IProducto> getProductos() {
         return productos;
@@ -111,16 +97,16 @@ public class Pedido implements IPedido {
         return estaPago;
     }
 
-    public Double getPrecio() {
-        return precio;
-    }
-
     public int getEnvejecimiento() {
         return envejecimiento;
     }
 
     public int getPrioridad() {
         return prioridad;
+    }
+
+    public int getId(){
+        return this.id;
     }
     
 }
