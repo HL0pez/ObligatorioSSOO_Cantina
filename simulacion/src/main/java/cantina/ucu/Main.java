@@ -95,7 +95,7 @@ public class Main {
         hiloAxel.start();
 
         System.out.println("Iniciando simulación...");
-        cantinaCUCU.simulacion(30);
+        cantinaCUCU.simulacion(5);
 
         try {
             hiloSeba.join();
