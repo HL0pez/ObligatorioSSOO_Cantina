@@ -46,10 +46,16 @@ public class Cliente extends Thread {
         return rol;
     }
 
+    public void setPuntosFidelidad(int nuevosPuntos){
+        this.puntosFidelidad = nuevosPuntos;
+    }
+
     @Override
     public void run() {
         if (pedido != null && cantina.estaAbierta()) {
             registrarPedido(pedido);
+        }else{
+            System.out.println("No se pudo hacer el pedido");
         }
     }
     

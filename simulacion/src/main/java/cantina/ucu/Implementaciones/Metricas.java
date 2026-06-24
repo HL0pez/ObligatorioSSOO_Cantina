@@ -45,7 +45,7 @@ public final class Metricas {
     }
 
     private void imprimirTiempoCafeteraOcupada(){
-        System.out.println("La cafetera estuco ocupada " + tiempoCafeteraOcupada + " segundos");
+        System.out.println("La cafetera estuvo ocupada " + tiempoCafeteraOcupada + " segundos");
     }
 
     private void imprimirPromedioTiempoTotalPedidos() {

@@ -70,18 +70,16 @@ public class Barista extends Thread {
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (!Thread.currentThread().isInterrupted() && cantina.estaAbierta()) {
             try {
-                if (cantina.estaAbierta()) {
-                    IPedido pedido = cantina.procesarPedido();
-
+                
+                IPedido pedido = cantina.procesarPedido();
                 if (pedido == null) {
                     break;
                 }
 
                 prepararPedido(pedido);
                 System.out.println(Thread.currentThread().getName() + " preparó pedido " + pedido.getId() + " del cliente " + pedido.getCliente().getName());
-                }
                 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

@@ -27,7 +27,7 @@ public class Main {
         IProducto capuchin = new Cafe(7);
 
         IRecursoCompartido cafetera = new Cafetera(2);
-        IRecursoCompartido caja = new CajaRegistradora(1);
+        IRecursoCompartido caja = new CajaRegistradora();
 
         ICantina cantinaCUCU = new Cantina(cafetera, caja, 2);
 
@@ -61,6 +61,10 @@ public class Main {
         Cliente alexis = new Cliente(Rol.PROFESOR);
         Cliente axel = new Cliente(Rol.ESTUDIANTE);
 
+        milgar.setPuntosFidelidad(25);
+        santi.setPuntosFidelidad(10);
+        seba.setPuntosFidelidad(20);
+
         seba.crearPedido(cantinaCUCU, productos1, FuenteDePedido.APP, true);
         enzo.crearPedido(cantinaCUCU, productos2, FuenteDePedido.TOTEM, false);
         pablito.crearPedido(cantinaCUCU, productos3, FuenteDePedido.MOSTRADOR, false);
@@ -72,22 +76,45 @@ public class Main {
         
         cantinaCUCU.abrir();
 
-        new Thread(seba, "Cliente Seba").start();
-        new Thread(enzo, "Cliente Enzo").start();
-        new Thread(pablito, "Cliente Pablito").start();
-        new Thread(milgar, "Cliente Milgar").start();
-        new Thread(her, "Cliente Her").start();
-        new Thread(santi, "Cliente Santi").start();
-        new Thread(alexis, "Cliente Alexis").start();
-        new Thread(axel, "Cliente Axel").start();
+        Thread hiloSeba = new Thread(seba, "Cliente Seba");
+        Thread hiloEnzo = new Thread(enzo, "Cliente Enzo");
+        Thread hiloPablito = new Thread(pablito, "Cliente Pablito");
+        Thread hiloMilgar = new Thread(milgar, "Cliente Milgar");
+        Thread hiloHer = new Thread(her, "Cliente Her");
+        Thread hiloSanti = new Thread(santi, "Cliente Santi");
+        Thread hiloAlexis = new Thread(alexis, "Cliente Alexis");
+        Thread hiloAxel = new Thread(axel, "Cliente Axel");
+
+        hiloSeba.start();
+        hiloEnzo.start();
+        hiloPablito.start();
+        hiloMilgar.start();
+        hiloHer.start();
+        hiloSanti.start();
+        hiloAlexis.start();
+        hiloAxel.start();
 
         System.out.println("Iniciando simulación...");
         cantinaCUCU.simulacion(30);
-        
-        // implementar join
-        // puntos fidelidad
 
-        metricas.imprimirMetricas();
+        try {
+            hiloSeba.join();
+            hiloEnzo.join();
+            hiloPablito.join();
+            hiloMilgar.join();
+            hiloHer.join();
+            hiloSanti.join();
+            hiloAlexis.join();
+            hiloAxel.join();
+
+            for (Thread barista : cantinaCUCU.getBaristas()) {
+                barista.join();
+            }
+
+            metricas.imprimirMetricas();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
     }
 }

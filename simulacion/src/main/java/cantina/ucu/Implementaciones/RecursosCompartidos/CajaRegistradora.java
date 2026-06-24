@@ -10,16 +10,9 @@ import cantina.ucu.Interfaces.IRecursoCompartido;
 
 public class CajaRegistradora implements IRecursoCompartido {
 
-    private int cantidad = 1;
     private final Lock mutex = new ReentrantLock(); 
     private final Metricas metricas = Metricas.getInstancia();
 
-    public CajaRegistradora(int cantidad){
-        this.cantidad = cantidad;
-    }
-    public int getCantidad() {
-        return cantidad;
-    }
 
     public Lock getMutex() {
         return mutex;
