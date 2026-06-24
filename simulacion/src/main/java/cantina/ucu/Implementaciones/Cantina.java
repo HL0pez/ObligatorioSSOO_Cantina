@@ -42,7 +42,9 @@ public class Cantina implements ICantina {
                 }
             }
             metricas.getPedidosCompletados().add(metricas.getPedidosSinAtender().poll());
-            return pedidosPendientes.poll();
+            IPedido pedido = pedidosPendientes.poll();
+            pedido.setMomentoDeAtencion();
+            return pedido;
         }
     }
 
@@ -102,6 +104,11 @@ public class Cantina implements ICantina {
 
     public List<Thread> getBaristas() {
         return baristas;
+    }
+
+    @Override
+    public Thread getReloj() {
+        return this.reloj;
     }
 
 }

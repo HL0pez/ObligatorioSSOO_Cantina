@@ -61,6 +61,7 @@ public class Barista extends Thread {
                 } finally {
                     System.out.println(Thread.currentThread().getName() + " libera la caja");
                     mutex.unlock();
+                    pedido.setMomentoDeEntrega();
                 }
             }
 

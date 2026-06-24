@@ -28,4 +28,5 @@ public interface ICantina {
 
     public void abrir();
 
+    public Thread getReloj();
 }

@@ -11,10 +11,11 @@ public class Reloj implements Runnable{
         this.tiempo = segundos;
         this.cantina = cantina;
     }
+
     @Override
     public void run() {
         try {
-            Thread.sleep(tiempo * 1000);
+            Thread.sleep(this.tiempo * 1000);
             cantina.cerrar();
             System.out.println("Ya cerramos! No admitimos mas pedidos. volvé pronto!!");
         } catch (InterruptedException e) {

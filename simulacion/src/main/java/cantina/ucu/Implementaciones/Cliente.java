@@ -54,6 +54,7 @@ public class Cliente extends Thread {
     public void run() {
         if (pedido != null && cantina.estaAbierta()) {
             registrarPedido(pedido);
+            pedido.setMomentoDeCreacion();
         }else{
             System.out.println("No se pudo hacer el pedido");
         }
