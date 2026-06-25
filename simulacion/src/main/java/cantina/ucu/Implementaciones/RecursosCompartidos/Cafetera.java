@@ -32,6 +32,8 @@ public class Cafetera implements IRecursoCompartido {
                     tiempoCafe += producto.getTiempoDePreparacion();
                 }
             }
+            Thread.sleep(tiempoCafe * 1000);
+            semaforoCafetera.release();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

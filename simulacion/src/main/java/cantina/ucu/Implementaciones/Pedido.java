@@ -1,9 +1,11 @@
 package cantina.ucu.Implementaciones;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import cantina.ucu.Implementaciones.Enums.FuenteDePedido;
+import cantina.ucu.Implementaciones.Enums.Rol;
 import cantina.ucu.Implementaciones.Productos.Cafe;
 import cantina.ucu.Interfaces.IPedido;
 import cantina.ucu.Interfaces.IProducto;
@@ -15,13 +17,13 @@ public class Pedido implements IPedido {
     private int tiempoDePreparacion = 0;
     private FuenteDePedido fuente;
     private boolean estaPago;
-    private int envejecimiento;
     private int prioridad;
     private static int contadorId;
     private int id;
     private LocalDateTime momentoDeCreacion;
     private LocalDateTime momentoDeAtencion;
     private LocalDateTime momentoDeEntrega;
+    private int bonusCafe = 2;
 
     public Pedido(List<IProducto> productos, Cliente cliente, FuenteDePedido fuenteDePedido, boolean estaPago){
         this.productos = productos;
@@ -35,8 +37,11 @@ public class Pedido implements IPedido {
         }else{
             this.estaPago = estaPago;
         }
-        this.id = ++contadorId;
+        synchronized (Pedido.class) {
+            this.id = ++contadorId;
+        }
         this.momentoDeCreacion = LocalDateTime.now();
+        this.prioridad = calcularPrioridad();
     }
 
     @Override
@@ -63,10 +68,31 @@ public class Pedido implements IPedido {
     }
 
     @Override
-    public void calcularPrioridad() {
-        // Prioridad = rol + fidelidad + (cantCafe * tieneCafe) + (tiempoDeEspera * factor envejecimiento)
-        prioridad = (cliente.getPrioridad() + cliente.getPuntosFidelidad() + (this.cantidadCafe() * 2 ) + (envejecimiento * 2) );
-        ++envejecimiento;
+    public int calcularPrioridad() {
+        // Prioridad = rol + fidelidad + (cantCafe * bonusCafe) + (tiempoDeEspera)
+        System.out.println("Prioridad anterior del pedido " + this.id + " " + this.prioridad);
+        int nuevaPrioridad = (cliente.getPrioridad() + cliente.getPuntosFidelidad() + (this.cantidadCafe() * bonusCafe ) + (int)calcularEnvejecimiento() * 2);
+        
+        if (calcularEnvejecimiento() > 300) {
+            this.prioridad = 99999999;
+            return this.prioridad;
+        }
+        
+        if (cliente.getRol() == Rol.PROFESOR && calcularEnvejecimiento() > 200) {
+        this.prioridad = 99999999;
+        return this.prioridad;
+        }
+        
+        this.prioridad = nuevaPrioridad;
+        System.out.println("Lleva " + calcularEnvejecimiento() + "s esperando");
+        System.out.println("Prioridad nueva del pedido " + this.id + " " + this.prioridad);
+        
+        return nuevaPrioridad;
+    }
+
+    @Override
+    public long calcularEnvejecimiento(){
+        return Duration.between(momentoDeCreacion, LocalDateTime.now()).getSeconds();
     }
 
     @Override
@@ -102,10 +128,6 @@ public class Pedido implements IPedido {
         return estaPago;
     }
 
-    public int getEnvejecimiento() {
-        return envejecimiento;
-    }
-
     public int getPrioridad() {
         return prioridad;
     }
@@ -132,10 +154,6 @@ public class Pedido implements IPedido {
 
     public void setEstaPago(boolean estaPago) {
         this.estaPago = estaPago;
-    }
-
-    public void setEnvejecimiento(int envejecimiento) {
-        this.envejecimiento = envejecimiento;
     }
 
     public void setPrioridad(int prioridad) {

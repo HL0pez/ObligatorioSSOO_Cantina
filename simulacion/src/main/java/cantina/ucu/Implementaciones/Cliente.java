@@ -19,7 +19,7 @@ public class Cliente extends Thread {
     public Cliente(Rol rol){
         this.rol = rol;
         if (rol == Rol.PROFESOR) {
-            this.prioridad = 5;
+            this.prioridad = 75;
         }
     }
     /*es privado porque  es el que corre después de hscer .start() */
@@ -32,6 +32,10 @@ public class Cliente extends Thread {
     public void crearPedido(ICantina cantina, List<IProducto> productos, FuenteDePedido fuenteDePedido, boolean estaPago) {
         this.pedido = new Pedido(productos, this , fuenteDePedido, estaPago);
         this.cantina = cantina;
+    }
+    /* crea nuevas instancias de pedido con los mismos atributos pero distinto id */
+    private void crearPedido(IPedido pedido){
+        this.pedido = new Pedido(pedido.getProductos(), this, pedido.getFuente(), pedido.getEstaPago());
     }
 
     public int getPrioridad() {
@@ -52,12 +56,29 @@ public class Cliente extends Thread {
 
     @Override
     public void run() {
-        if (pedido != null && cantina.estaAbierta()) {
+        while (cantina.estaAbierta()) {
+        if (pedido != null && cantina.estaAbierta() && !cantina.getPedidosPendientes().contains(pedido)) {
+            crearPedido(pedido);
+            System.out.println(Thread.currentThread().getName() + " hizo el pedido " + pedido.getId() + " desde " + pedido.getFuente() + " con prioridad " + pedido.getPrioridad());
             registrarPedido(pedido);
             pedido.setMomentoDeCreacion();
-        }else{
-            System.out.println("No se pudo hacer el pedido");
         }
-    }
+        try {
+            if (pedido.getFuente() == FuenteDePedido.APP) {
+                Thread.sleep(10000);
+            }else if (pedido.getFuente() == FuenteDePedido.TOTEM) {
+                Thread.sleep(20000);
+            }else if (pedido.getFuente() == FuenteDePedido.MOSTRADOR) {
+                Thread.sleep(30000);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            
+        }
+        }
+
+
+        }
+
     
 }

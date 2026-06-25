@@ -3,7 +3,6 @@ package cantina.ucu.Implementaciones;
 import java.util.concurrent.locks.Lock;
 
 import cantina.ucu.Implementaciones.Productos.Cafe;
-import cantina.ucu.Implementaciones.RecursosCompartidos.Cafetera;
 import cantina.ucu.Implementaciones.RecursosCompartidos.CajaRegistradora;
 import cantina.ucu.Interfaces.ICantina;
 import cantina.ucu.Interfaces.IPedido;
@@ -13,6 +12,7 @@ import cantina.ucu.Interfaces.IRecursoCompartido;
 public class Barista extends Thread {
 
     private ICantina cantina;
+    private Metricas metricas = Metricas.getInstancia();
 
     public Barista(ICantina cantina) {
         this.cantina = cantina;
@@ -21,17 +21,10 @@ public class Barista extends Thread {
     private void prepararPedido(IPedido pedido) throws InterruptedException {
         if (pedido.tieneCafe()) {
                 IRecursoCompartido cafetera = cantina.getCafetera();
-                try {
-                    System.out.println(Thread.currentThread().getName() + " ocupa un slot de la cafetera");
-                    int tiempoCafe = cafetera.atender(pedido);
-                    System.out.println(Thread.currentThread().getName() + " usa el slot por " + tiempoCafe + " segundos");
-                    Thread.sleep(tiempoCafe * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }finally{
-                    ((Cafetera) cafetera).getSemaforo().release();
-                    System.out.println(Thread.currentThread().getName() + " libera el slot de la cafetera");
-                }
+                System.out.println(Thread.currentThread().getName() + " ocupa un slot de la cafetera");
+                int tiempoCafe = cafetera.atender(pedido);
+                System.out.println(Thread.currentThread().getName() + " usó el slot por " + tiempoCafe + " segundos");
+                System.out.println(Thread.currentThread().getName() + " libera el slot de la cafetera");
             }
 
             int tiempoDePreparacion = 0;
@@ -61,7 +54,6 @@ public class Barista extends Thread {
                 } finally {
                     System.out.println(Thread.currentThread().getName() + " libera la caja");
                     mutex.unlock();
-                    pedido.setMomentoDeEntrega();
                 }
             }
 
@@ -74,13 +66,21 @@ public class Barista extends Thread {
         while (!Thread.currentThread().isInterrupted() && cantina.estaAbierta()) {
             try {
                 
-                IPedido pedido = cantina.procesarPedido();
+                IPedido pedido = cantina.procesarPedido();                
                 if (pedido == null) {
                     break;
                 }
+                
+                System.out.println(Thread.currentThread().getName() + " tomo el pedido " + pedido.getId() );
 
                 prepararPedido(pedido);
-                System.out.println(Thread.currentThread().getName() + " preparó pedido " + pedido.getId() + " del cliente " + pedido.getCliente().getName());
+                System.out.println(Thread.currentThread().getName() + " preparó pedido " + pedido.getId());
+                pedido.setMomentoDeEntrega();
+
+                synchronized(metricas.getPedidosSinAtender()){
+                    metricas.getPedidosSinAtender().poll();
+                    metricas.getPedidosCompletados().add(pedido);
+                }
                 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

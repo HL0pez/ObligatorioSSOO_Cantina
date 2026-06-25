@@ -7,12 +7,13 @@ import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import cantina.ucu.Implementaciones.Enums.Rol;
 import cantina.ucu.Interfaces.IPedido;
 
 public final class Metricas {
     private Queue<IPedido> pedidosCompletados;
     private int tiempoCafeteraOcupada;
-    private Queue<IPedido> pedidosSinAtender;
+    private Queue<IPedido> pedidosSinAtender; // no es un valor real solo se usa para contar
     private static Metricas instancia = null;
     private final Lock mutexTiempo = new ReentrantLock();
     private final Lock mutexPedidos = new ReentrantLock();
@@ -39,10 +40,11 @@ public final class Metricas {
         imprimirPromedioTiempoTotalPedidos();
         System.out.println("\n");
         imprimirTiempoCafeteraOcupada();
+        System.out.println("\n");
     }
 
     private void imprimirTiempoCafeteraOcupada(){
-        System.out.println("La cafetera estuvo ocupada " + tiempoCafeteraOcupada + " segundos");
+        System.out.println("Los slots de la cafetera estuvieron ocupados " + tiempoCafeteraOcupada + " segundos entre todos");
     }
 
     private void imprimirPromedioTiempoTotalPedidos() {
@@ -56,16 +58,16 @@ public final class Metricas {
         for (IPedido pedido : pedidosCompletados) {
             LocalDateTime creacion = pedido.getMomentoDeCreacion();
             LocalDateTime entrega = pedido.getMomentoDeEntrega();
-
             if (creacion != null && entrega != null) {
                 long segundosPedido = Duration.between(creacion, entrega).getSeconds();
                 totalSegundos += segundosPedido;
-                System.out.println("El pedido numero " + pedido.getId() + " demoro " + segundosPedido + " segundos en ser entregado");
+                Rol rol = pedido.getCliente().getRol();
+                System.out.println("El " + rol + " con pedido numero " + pedido.getId() + " demoro " + segundosPedido + " segundos en ser entregado");
             }
         }
 
         Double promedioTiempoTotalPedidos = (double) totalSegundos / pedidosCompletados.size();
-        System.out.println("Promedio tiempo total de pedidos: " + promedioTiempoTotalPedidos + " segundos");
+        System.out.println("\nPromedio tiempo total de pedidos: " + promedioTiempoTotalPedidos + " segundos");
     }
 
     private void imprimirPromedioTiempoEnEsperaPedidos() {
@@ -75,6 +77,11 @@ public final class Metricas {
         }
         
         long totalSegundos = 0;
+        long segundosPedidoMax = 0;
+        long segundosPedidoMaxProfesor = 0;
+        IPedido pedidoMasDemorado = null;
+        IPedido profesorMasDemorado = null;
+
 
         for (IPedido pedido : pedidosCompletados) {
             LocalDateTime creacion = pedido.getMomentoDeCreacion();
@@ -82,12 +89,28 @@ public final class Metricas {
 
             if (creacion != null && atencion != null) {
                 long segundosPedido = Duration.between(creacion, atencion).getSeconds();
+                if (segundosPedido > segundosPedidoMax) {
+                    segundosPedidoMax = segundosPedido;
+                    pedidoMasDemorado = pedido;
+                }
+                if (pedido.getCliente().getRol() == Rol.PROFESOR && segundosPedido > segundosPedidoMaxProfesor) {
+                    segundosPedidoMaxProfesor = segundosPedido;
+                    profesorMasDemorado = pedido;
+                }
                 totalSegundos += segundosPedido;
                 System.out.println("El pedido numero " + pedido.getId() + " demoro " + segundosPedido + " segundos en ser atendido");
             }
         }
+        
         Double promedioTiempoEnEsperaPedidos = (double) totalSegundos / pedidosCompletados.size();
-        System.out.println("Promedio tiempo en espera de pedidos: " + promedioTiempoEnEsperaPedidos + " segundos");
+        System.out.println("\nPromedio tiempo en espera de pedidos: " + promedioTiempoEnEsperaPedidos + " segundos");
+        
+        if (pedidoMasDemorado != null) {
+            System.out.println("El pedido que espero en general mas fue " + pedidoMasDemorado.getId() + " con " + segundosPedidoMax + " segundos");
+        }
+        if (profesorMasDemorado != null) {
+            System.out.println("El pedido del profesor que espero mas fue " + profesorMasDemorado.getId() + " con " + segundosPedidoMaxProfesor + " segundos");
+        }
     }
 
     private void imprimirPendientes() {
@@ -111,6 +134,7 @@ public final class Metricas {
             mutexPedidos.unlock();
         }
     }
+
     public int getTiempoCafeteraOcupada() {
         mutexTiempo.lock();
         try {
@@ -119,6 +143,7 @@ public final class Metricas {
             mutexTiempo.unlock();
         }
     }
+
     public Queue<IPedido> getPedidosSinAtender() {
         mutexPedidos.lock();
         try {
@@ -127,7 +152,4 @@ public final class Metricas {
             mutexPedidos.unlock();
         }
     }
-
-
-
 }

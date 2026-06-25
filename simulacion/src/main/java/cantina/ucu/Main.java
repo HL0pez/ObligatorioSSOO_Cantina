@@ -21,10 +21,10 @@ public class Main {
 
         Metricas metricas = Metricas.getInstancia();
 
-        IProducto awita = new Agua(2);
-        IProducto cortadito = new Cafe(5);
-        IProducto medialunita = new Medialuna(4);
-        IProducto capuchin = new Cafe(7);
+        IProducto awita = new Agua(1);
+        IProducto cortadito = new Cafe(3);
+        IProducto medialunita = new Medialuna(2);
+        IProducto capuchin = new Cafe(4);
 
         IRecursoCompartido cafetera = new Cafetera(2);
         IRecursoCompartido caja = new CajaRegistradora();
@@ -53,12 +53,12 @@ public class Main {
         productos4.add(medialunita);
 
         Cliente seba = new Cliente(Rol.PROFESOR);
-        Cliente enzo = new Cliente(Rol.ESTUDIANTE);
+        Cliente enzo = new Cliente(Rol.PROFESOR);
         Cliente pablito = new Cliente(Rol.PROFESOR);
         Cliente milgar = new Cliente(Rol.ESTUDIANTE);
-        Cliente her = new Cliente(Rol.PROFESOR);
+        Cliente her = new Cliente(Rol.ESTUDIANTE);
         Cliente santi = new Cliente(Rol.ESTUDIANTE);
-        Cliente alexis = new Cliente(Rol.PROFESOR);
+        Cliente alexis = new Cliente(Rol.ESTUDIANTE);
         Cliente axel = new Cliente(Rol.ESTUDIANTE);
 
         milgar.setPuntosFidelidad(25);
@@ -76,14 +76,17 @@ public class Main {
         
         cantinaCUCU.abrir();
 
-        Thread hiloSeba = new Thread(seba, "Cliente Seba");
-        Thread hiloEnzo = new Thread(enzo, "Cliente Enzo");
-        Thread hiloPablito = new Thread(pablito, "Cliente Pablito");
-        Thread hiloMilgar = new Thread(milgar, "Cliente Milgar");
-        Thread hiloHer = new Thread(her, "Cliente Her");
-        Thread hiloSanti = new Thread(santi, "Cliente Santi");
-        Thread hiloAlexis = new Thread(alexis, "Cliente Alexis");
-        Thread hiloAxel = new Thread(axel, "Cliente Axel");
+        Thread hiloSeba = new Thread(seba, "Seba");
+        Thread hiloEnzo = new Thread(enzo, "Enzo");
+        Thread hiloPablito = new Thread(pablito, "Pablito");
+        Thread hiloMilgar = new Thread(milgar, "Mili");
+        Thread hiloHer = new Thread(her, "Her");
+        Thread hiloSanti = new Thread(santi, "Santi");
+        Thread hiloAlexis = new Thread(alexis, "Alexis");
+        Thread hiloAxel = new Thread(axel, "Axel");
+
+        System.out.println("Iniciando simulación...");
+        cantinaCUCU.simulacion(90);
 
         hiloSeba.start();
         hiloEnzo.start();
@@ -93,9 +96,6 @@ public class Main {
         hiloSanti.start();
         hiloAlexis.start();
         hiloAxel.start();
-
-        System.out.println("Iniciando simulación...");
-        cantinaCUCU.simulacion(5);
 
         try {
             hiloSeba.join();

@@ -1,5 +1,6 @@
 package cantina.ucu.Implementaciones;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -34,17 +35,22 @@ public class Cantina implements ICantina {
             procesa el pedido con más prioridad con el run de barista
         */
         synchronized(pedidosPendientes){
-            while (pedidosPendientes.isEmpty()) {
+            while (pedidosPendientes.isEmpty() && abierta) {
                 try {
                     pedidosPendientes.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            metricas.getPedidosCompletados().add(metricas.getPedidosSinAtender().poll());
-            IPedido pedido = pedidosPendientes.poll();
-            pedido.setMomentoDeAtencion();
-            return pedido;
+            if (pedidosPendientes.isEmpty()) {
+                return null;
+            }
+            if (abierta) {
+                IPedido pedido = pedidosPendientes.poll();
+                pedido.setMomentoDeAtencion();
+                return pedido;
+            }
+            return null;
         }
     }
 
@@ -62,8 +68,12 @@ public class Cantina implements ICantina {
 
     public void recalcularPrioridad() {
         synchronized (pedidosPendientes) {
-            for (IPedido pedido : pedidosPendientes) {
+            List<IPedido> pedidos = new ArrayList<>(pedidosPendientes);
+            pedidosPendientes.clear();
+
+            for (IPedido pedido : pedidos) {
                 pedido.calcularPrioridad();
+                pedidosPendientes.add(pedido);
             }
         }
     }
@@ -79,6 +89,9 @@ public class Cantina implements ICantina {
     
     public void cerrar() {
         this.abierta = false;
+        synchronized (pedidosPendientes) {
+            pedidosPendientes.notifyAll();
+        }
     }
 
     public void abrir() {

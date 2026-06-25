@@ -22,7 +22,7 @@ public interface ICantina {
 
     public boolean estaAbierta();
 
-    public void simulacion(int i);
+    public void simulacion(int segundos);
 
     public void cerrar();
 

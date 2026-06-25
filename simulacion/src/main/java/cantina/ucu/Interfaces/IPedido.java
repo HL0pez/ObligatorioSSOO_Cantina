@@ -4,12 +4,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import cantina.ucu.Implementaciones.Cliente;
+import cantina.ucu.Implementaciones.Enums.FuenteDePedido;
 
 
 public interface IPedido extends Comparable<IPedido> {
 
     public boolean tieneCafe();
-    public void calcularPrioridad();
+    public int calcularPrioridad();
     public List<IProducto> getProductos();
     public boolean getEstaPago();
     public Cliente getCliente();
@@ -22,4 +23,6 @@ public interface IPedido extends Comparable<IPedido> {
     public void setMomentoDeAtencion();
     public LocalDateTime getMomentoDeEntrega();
     public void setMomentoDeEntrega();
+    public FuenteDePedido getFuente();
+    long calcularEnvejecimiento();
 }
