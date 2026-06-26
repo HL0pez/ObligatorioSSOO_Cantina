@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: cantina.ucu.Implementaciones.MetricasTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.105 s -- in cantina.ucu.Implementaciones.MetricasTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in cantina.ucu.Implementaciones.MetricasTest
