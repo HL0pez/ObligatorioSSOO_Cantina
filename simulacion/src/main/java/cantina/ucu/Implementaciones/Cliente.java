@@ -46,9 +46,9 @@ public class Cliente extends Thread {
         while (cantina.estaAbierta()) {
         if (pedido != null && cantina.estaAbierta()) {
             crearPedido(pedido);
+            pedido.setMomentoDeCreacion();
             System.out.println(Thread.currentThread().getName() + " hizo el pedido " + pedido.getId() + " desde " + pedido.getFuente() + " con prioridad " + pedido.getPrioridad());
             registrarPedido(pedido);
-            pedido.setMomentoDeCreacion();
         }
         try {
             if (pedido.getFuente() == FuenteDePedido.APP) {

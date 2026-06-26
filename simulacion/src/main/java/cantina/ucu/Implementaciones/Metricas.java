@@ -8,20 +8,20 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import cantina.ucu.Implementaciones.Enums.Rol;
+import cantina.ucu.Interfaces.ICantina;
 import cantina.ucu.Interfaces.IPedido;
 
 public final class Metricas {
     private Queue<IPedido> pedidosCompletados;
     private int tiempoCafeteraOcupada;
-    private Queue<IPedido> pedidosSinAtender; // no es un valor real solo se usa para contar
     private static Metricas instancia = null;
     private final Lock mutexTiempo = new ReentrantLock();
     private final Lock mutexPedidos = new ReentrantLock();
+    private ICantina cantina;
     
     private Metricas() {
         this.pedidosCompletados = new LinkedList<IPedido>();
         this.tiempoCafeteraOcupada = 0;
-        this.pedidosSinAtender = new LinkedList<IPedido>();
     }
 
     public static Metricas getInstancia() {
@@ -143,7 +143,15 @@ public final class Metricas {
     }
 
     private void imprimirPendientes() {
-        System.out.println("Quedaron " + pedidosSinAtender.size() + " pedidos sin atender");
+        if (this.cantina != null) {
+            System.out.println("Quedaron " + cantina.getPedidosPendientes().size() + " pedidos sin atender");        
+        }
+        for (IPedido pedido : cantina.getPedidosPendientes()) {
+            long espera = Duration.between(pedido.getMomentoDeCreacion(), LocalDateTime.now()).getSeconds();
+            if (espera > 300) {
+                System.out.println("El pedido" + pedido.getId() + " supero el umbral de espera de 5 minutos");
+            }
+        }
     }
 
     public void agregarTiempoCafeteraOcupada(int tiempo){
@@ -175,12 +183,9 @@ public final class Metricas {
         }
     }
 
-    public Queue<IPedido> getPedidosSinAtender() {
-        mutexPedidos.lock();
-        try {
-            return pedidosSinAtender;
-        } finally {
-            mutexPedidos.unlock();
-        }
+    // ========================================= getters =========================================
+
+    public void setCantina(ICantina cantina){
+        this.cantina = cantina;
     }
 }

@@ -78,10 +78,7 @@ public class Barista extends Thread {
                 System.out.println(Thread.currentThread().getName() + " preparó pedido " + pedido.getId());
                 pedido.setMomentoDeEntrega();
 
-                synchronized(metricas.getPedidosSinAtender()){
-                    metricas.getPedidosSinAtender().poll();
-                    metricas.getPedidosCompletados().add(pedido);
-                }
+                metricas.getPedidosCompletados().add(pedido);
                 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

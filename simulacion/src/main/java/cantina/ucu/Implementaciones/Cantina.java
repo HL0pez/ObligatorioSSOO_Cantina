@@ -17,7 +17,6 @@ public class Cantina implements ICantina {
     private List<Thread> baristas = new LinkedList<>();
     private boolean abierta = false;
     private Thread reloj;
-    private Metricas metricas = Metricas.getInstancia();
 
     public Cantina(IRecursoCompartido cafetera, IRecursoCompartido cajaRegistradora, int cantidadBaristas){
         this.cafetera = cafetera;
@@ -66,7 +65,6 @@ public class Cantina implements ICantina {
                 return;
             }
             pedidosPendientes.add(pedido);
-            metricas.getPedidosSinAtender().add(pedido);
             pedidosPendientes.notifyAll();    
         }
     }

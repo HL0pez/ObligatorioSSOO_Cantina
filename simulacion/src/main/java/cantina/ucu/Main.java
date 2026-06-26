@@ -31,7 +31,8 @@ public class Main {
 
         ICantina cantinaCUCU = new Cantina(cafetera, caja, 2);
 
-
+        metricas.setCantina(cantinaCUCU);
+        
         LinkedList<IProducto> productos1 = new LinkedList<>();
         LinkedList<IProducto> productos2 = new LinkedList<>();
         LinkedList<IProducto> productos3 = new LinkedList<>();
