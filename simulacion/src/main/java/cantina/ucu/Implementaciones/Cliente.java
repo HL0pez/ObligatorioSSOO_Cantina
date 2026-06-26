@@ -19,13 +19,15 @@ public class Cliente extends Thread {
     public Cliente(Rol rol){
         this.rol = rol;
         if (rol == Rol.PROFESOR) {
-            this.prioridad = 75;
+            this.prioridad = 50;
         }
     }
     /*es privado porque  es el que corre después de hscer .start() */
     private void registrarPedido(IPedido pedido) {
         cantina.agregarPedido(pedido);
-        ++puntosFidelidad;
+        if(puntosFidelidad < 100){
+            ++puntosFidelidad;
+        }
     }
 
     /*este es el que se usa en el main,  */
@@ -38,26 +40,11 @@ public class Cliente extends Thread {
         this.pedido = new Pedido(pedido.getProductos(), this, pedido.getFuente(), pedido.getEstaPago());
     }
 
-    public int getPrioridad() {
-        return prioridad;
-    }
-
-    public int getPuntosFidelidad() {
-        return puntosFidelidad;
-    }
-
-    public Rol getRol() {
-        return rol;
-    }
-
-    public void setPuntosFidelidad(int nuevosPuntos){
-        this.puntosFidelidad = nuevosPuntos;
-    }
 
     @Override
     public void run() {
         while (cantina.estaAbierta()) {
-        if (pedido != null && cantina.estaAbierta() && !cantina.getPedidosPendientes().contains(pedido)) {
+        if (pedido != null && cantina.estaAbierta()) {
             crearPedido(pedido);
             System.out.println(Thread.currentThread().getName() + " hizo el pedido " + pedido.getId() + " desde " + pedido.getFuente() + " con prioridad " + pedido.getPrioridad());
             registrarPedido(pedido);
@@ -73,12 +60,28 @@ public class Cliente extends Thread {
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
-            
         }
         }
+    }
 
+// ========================================= getters =========================================
 
-        }
+    public int getPrioridad() {
+        return prioridad;
+    }
+
+    public int getPuntosFidelidad() {
+        return puntosFidelidad;
+    }
+
+    public Rol getRol() {
+        return rol;
+    }
 
     
+// ========================================= setters =========================================
+
+    public void setPuntosFidelidad(int nuevosPuntos){
+        this.puntosFidelidad = nuevosPuntos;
+    }
 }

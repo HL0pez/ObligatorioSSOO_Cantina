@@ -86,7 +86,7 @@ public class Main {
         Thread hiloAxel = new Thread(axel, "Axel");
 
         System.out.println("Iniciando simulación...");
-        cantinaCUCU.simulacion(90);
+        cantinaCUCU.simulacion(60);
 
         hiloSeba.start();
         hiloEnzo.start();

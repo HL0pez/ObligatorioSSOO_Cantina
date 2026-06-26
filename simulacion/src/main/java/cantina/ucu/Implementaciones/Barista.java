@@ -18,6 +18,9 @@ public class Barista extends Thread {
         this.cantina = cantina;
     }
 
+    /*
+    la logica de como se procesan los pedidos
+    */
     private void prepararPedido(IPedido pedido) throws InterruptedException {
         if (pedido.tieneCafe()) {
                 IRecursoCompartido cafetera = cantina.getCafetera();
@@ -48,19 +51,17 @@ public class Barista extends Thread {
                 mutex.lock();
                 try {
                     System.out.println(Thread.currentThread().getName() + " ocupa caja");
-                    int cantidadProductos = caja.atender(pedido);
-                    System.out.println(Thread.currentThread().getName() + " usa caja por " + cantidadProductos + " segundos");
-                    Thread.sleep(cantidadProductos * 2000);
+                    caja.atender(pedido);
                 } finally {
                     System.out.println(Thread.currentThread().getName() + " libera la caja");
                     mutex.unlock();
                 }
             }
-
-        cantina.recalcularPrioridad();
     }   
 
-
+    /*
+    mientras la cantina este abierta procesa pedidos y asigna sus metricas
+    */
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted() && cantina.estaAbierta()) {

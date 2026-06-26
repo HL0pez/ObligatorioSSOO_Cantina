@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import cantina.ucu.Implementaciones.Enums.FuenteDePedido;
-import cantina.ucu.Implementaciones.Enums.Rol;
 import cantina.ucu.Implementaciones.Productos.Cafe;
 import cantina.ucu.Interfaces.IPedido;
 import cantina.ucu.Interfaces.IProducto;
@@ -70,7 +69,6 @@ public class Pedido implements IPedido {
     @Override
     public int calcularPrioridad() {
         // Prioridad = rol + fidelidad + (cantCafe * bonusCafe) + (tiempoDeEspera)
-        System.out.println("Prioridad anterior del pedido " + this.id + " " + this.prioridad);
         int nuevaPrioridad = (cliente.getPrioridad() + cliente.getPuntosFidelidad() + (this.cantidadCafe() * bonusCafe ) + (int)calcularEnvejecimiento() * 2);
         
         if (calcularEnvejecimiento() > 300) {
@@ -78,14 +76,8 @@ public class Pedido implements IPedido {
             return this.prioridad;
         }
         
-        if (cliente.getRol() == Rol.PROFESOR && calcularEnvejecimiento() > 200) {
-        this.prioridad = 99999999;
-        return this.prioridad;
-        }
-        
         this.prioridad = nuevaPrioridad;
-        System.out.println("Lleva " + calcularEnvejecimiento() + "s esperando");
-        System.out.println("Prioridad nueva del pedido " + this.id + " " + this.prioridad);
+        //System.out.println("Prioridad nueva del pedido " + this.id + " " + this.prioridad);
         
         return nuevaPrioridad;
     }
@@ -107,6 +99,8 @@ public class Pedido implements IPedido {
             return comparacionId;
         }
     }
+
+// ========================================= getters =========================================
 
     public List<IProducto> getProductos() {
         return productos;
@@ -136,64 +130,33 @@ public class Pedido implements IPedido {
         return this.id;
     }
 
-    public void setProductos(List<IProducto> productos) {
-        this.productos = productos;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    public void setTiempoDePreparacion(int tiempoDePreparacion) {
-        this.tiempoDePreparacion = tiempoDePreparacion;
-    }
-
-    public void setFuente(FuenteDePedido fuente) {
-        this.fuente = fuente;
-    }
-
-    public void setEstaPago(boolean estaPago) {
-        this.estaPago = estaPago;
-    }
-
-    public void setPrioridad(int prioridad) {
-        this.prioridad = prioridad;
-    }
-
-    public static int getContadorId() {
-        return contadorId;
-    }
-
-    public static void setContadorId(int contadorId) {
-        Pedido.contadorId = contadorId;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public LocalDateTime getMomentoDeCreacion() {
         return momentoDeCreacion;
-    }
-
-    public void setMomentoDeCreacion() {
-        this.momentoDeCreacion = LocalDateTime.now();
     }
 
     public LocalDateTime getMomentoDeAtencion() {
         return momentoDeAtencion;
     }
 
-    public void setMomentoDeAtencion() {
-        this.momentoDeAtencion = LocalDateTime.now();
-    }
-
     public LocalDateTime getMomentoDeEntrega() {
         return momentoDeEntrega;
     }
 
+// ========================================= setters =========================================
+
+    public void setPrioridad(int prioridad) {
+        this.prioridad = prioridad;
+    }
+
+    public void setMomentoDeCreacion() {
+        this.momentoDeCreacion = LocalDateTime.now();
+    }
+
+    public void setMomentoDeAtencion() {
+        this.momentoDeAtencion = LocalDateTime.now();
+    }
+    
     public void setMomentoDeEntrega() {
         this.momentoDeEntrega = LocalDateTime.now();
     }
-    
 }

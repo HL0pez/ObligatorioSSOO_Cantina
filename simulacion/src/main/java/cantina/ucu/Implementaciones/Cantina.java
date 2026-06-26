@@ -29,11 +29,12 @@ public class Cantina implements ICantina {
         this.pedidosPendientes = new PriorityQueue<>();
     }
 
+    /*  
+    procesa el pedido con más prioridad con el run de barista
+    y guarda sus metricas
+    */
     @Override
     public IPedido procesarPedido() {
-        /*  
-            procesa el pedido con más prioridad con el run de barista
-        */
         synchronized(pedidosPendientes){
             while (pedidosPendientes.isEmpty() && abierta) {
                 try {
@@ -46,6 +47,7 @@ public class Cantina implements ICantina {
                 return null;
             }
             if (abierta) {
+                recalcularPrioridad();
                 IPedido pedido = pedidosPendientes.poll();
                 pedido.setMomentoDeAtencion();
                 return pedido;
@@ -54,18 +56,24 @@ public class Cantina implements ICantina {
         }
     }
 
+    /*
+    agrega el pedido a pendientes
+    */
     @Override
     public void agregarPedido(IPedido pedido) {
-        if (abierta) {
-            synchronized (pedidosPendientes) {
-                pedido.calcularPrioridad();
-                pedidosPendientes.add(pedido);
-                metricas.getPedidosSinAtender().add(pedido);
-                pedidosPendientes.notifyAll();
-            }    
+        synchronized (pedidosPendientes) {
+            if (!abierta) {
+                return;
+            }
+            pedidosPendientes.add(pedido);
+            metricas.getPedidosSinAtender().add(pedido);
+            pedidosPendientes.notifyAll();    
         }
     }
 
+    /*
+    recalcula la prioridad de todos los pedidos en pendientes
+    */
     public void recalcularPrioridad() {
         synchronized (pedidosPendientes) {
             List<IPedido> pedidos = new ArrayList<>(pedidosPendientes);
@@ -88,8 +96,8 @@ public class Cantina implements ICantina {
     }
     
     public void cerrar() {
-        this.abierta = false;
-        synchronized (pedidosPendientes) {
+        synchronized (pedidosPendientes) {        
+            this.abierta = false;
             pedidosPendientes.notifyAll();
         }
     }
@@ -103,12 +111,15 @@ public class Cantina implements ICantina {
         }
     }
 
+// ========================================= getters =========================================
     public IRecursoCompartido getCafetera() {
         return cafetera;
     }
 
     public PriorityQueue<IPedido> getPedidosPendientes() {
-        return pedidosPendientes;
+        synchronized(pedidosPendientes){
+            return pedidosPendientes;
+        }
     }
 
     public IRecursoCompartido getCaja() {

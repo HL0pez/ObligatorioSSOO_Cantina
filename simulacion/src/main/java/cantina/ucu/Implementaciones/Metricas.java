@@ -54,6 +54,7 @@ public final class Metricas {
         }
 
         long totalSegundos = 0;
+        int pedidosValidos = 0;
 
         for (IPedido pedido : pedidosCompletados) {
             LocalDateTime creacion = pedido.getMomentoDeCreacion();
@@ -61,12 +62,13 @@ public final class Metricas {
             if (creacion != null && entrega != null) {
                 long segundosPedido = Duration.between(creacion, entrega).getSeconds();
                 totalSegundos += segundosPedido;
+                pedidosValidos++;
                 Rol rol = pedido.getCliente().getRol();
                 System.out.println("El " + rol + " con pedido numero " + pedido.getId() + " demoro " + segundosPedido + " segundos en ser entregado");
             }
         }
 
-        Double promedioTiempoTotalPedidos = (double) totalSegundos / pedidosCompletados.size();
+        double promedioTiempoTotalPedidos = pedidosValidos == 0 ? 0.0 : (double) totalSegundos / pedidosValidos;
         System.out.println("\nPromedio tiempo total de pedidos: " + promedioTiempoTotalPedidos + " segundos");
     }
 
@@ -79,37 +81,64 @@ public final class Metricas {
         long totalSegundos = 0;
         long segundosPedidoMax = 0;
         long segundosPedidoMaxProfesor = 0;
+        long totalSegundosProfesor = 0;
+        long totalSegundosAlumno = 0;
         IPedido pedidoMasDemorado = null;
         IPedido profesorMasDemorado = null;
-
+        int cantAlumnos = 0;
+        int cantProfes = 0;
+        int pedidosValidos = 0;
 
         for (IPedido pedido : pedidosCompletados) {
             LocalDateTime creacion = pedido.getMomentoDeCreacion();
             LocalDateTime atencion = pedido.getMomentoDeAtencion();
 
             if (creacion != null && atencion != null) {
+                pedidosValidos++;
                 long segundosPedido = Duration.between(creacion, atencion).getSeconds();
                 if (segundosPedido > segundosPedidoMax) {
                     segundosPedidoMax = segundosPedido;
                     pedidoMasDemorado = pedido;
                 }
-                if (pedido.getCliente().getRol() == Rol.PROFESOR && segundosPedido > segundosPedidoMaxProfesor) {
-                    segundosPedidoMaxProfesor = segundosPedido;
-                    profesorMasDemorado = pedido;
+                if (pedido.getCliente().getRol() == Rol.PROFESOR) {
+                    totalSegundosProfesor += segundosPedido;
+                    cantProfes++;
+                    if (segundosPedido > segundosPedidoMaxProfesor) {
+                        segundosPedidoMaxProfesor = segundosPedido;
+                        profesorMasDemorado = pedido;
+                    }
+                }
+
+                if (pedido.getCliente().getRol() == Rol.ESTUDIANTE) {
+                    totalSegundosAlumno += segundosPedido;
+                    cantAlumnos++;
                 }
                 totalSegundos += segundosPedido;
-                System.out.println("El pedido numero " + pedido.getId() + " demoro " + segundosPedido + " segundos en ser atendido");
+                System.out.println("El " + pedido.getCliente().getRol() + " con pedido numero " + pedido.getId() + " demoro " + segundosPedido + " segundos en ser atendido");
             }
         }
-        
-        Double promedioTiempoEnEsperaPedidos = (double) totalSegundos / pedidosCompletados.size();
-        System.out.println("\nPromedio tiempo en espera de pedidos: " + promedioTiempoEnEsperaPedidos + " segundos");
+
+        if (pedidosValidos != 0) {
+            double promedioTiempoEnEsperaPedidos = (double) totalSegundos / pedidosValidos;
+            System.out.println("\nPromedio tiempo en espera de pedidos: " + promedioTiempoEnEsperaPedidos + " segundos");
+        }
+
+        if (cantProfes != 0) {
+            double promedioTiempoEnEsperaPedidosProfe = (double) totalSegundosProfesor / cantProfes;
+            System.out.println("\nPromedio tiempo en espera de pedidos de profesores: " + promedioTiempoEnEsperaPedidosProfe + " segundos");
+        }
+
+        if (cantAlumnos != 0) {
+            double promedioTiempoEnEsperaPedidosEstudiante = (double) totalSegundosAlumno / cantAlumnos;
+            System.out.println("\nPromedio tiempo en espera de pedidos de alumnos: " + promedioTiempoEnEsperaPedidosEstudiante + " segundos");
+        }
         
         if (pedidoMasDemorado != null) {
-            System.out.println("El pedido que espero en general mas fue " + pedidoMasDemorado.getId() + " con " + segundosPedidoMax + " segundos");
+            System.out.println("El pedido que espero en general mas fue " + pedidoMasDemorado.getId() + " con " + segundosPedidoMax + " segundos en ser atendido");
         }
+        
         if (profesorMasDemorado != null) {
-            System.out.println("El pedido del profesor que espero mas fue " + profesorMasDemorado.getId() + " con " + segundosPedidoMaxProfesor + " segundos");
+            System.out.println("El pedido del profesor que espero mas fue " + profesorMasDemorado.getId() + " con " + segundosPedidoMaxProfesor + " segundos en ser atendido");
         }
     }
 
@@ -125,6 +154,8 @@ public final class Metricas {
             mutexTiempo.unlock();
         }
     }
+    
+// ========================================= getters =========================================
     
     public Queue<IPedido> getPedidosCompletados() {
         mutexPedidos.lock();

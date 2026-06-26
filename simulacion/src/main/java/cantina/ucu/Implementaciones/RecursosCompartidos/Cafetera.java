@@ -21,27 +21,46 @@ public class Cafetera implements IRecursoCompartido {
         this.metricas = Metricas.getInstancia();
     }
 
-
+    /*
+    toma su slot (semaforo)
+    calcula el tiempo que va a estar ocupado el slot de la cafetera
+    espera el tiempo que toma hacer los cafes
+    libera el slot (semaforo)
+    guarda el tiempo que estuvo ocupado en metricas
+    */
     public int atender(IPedido pedido){
         int tiempoCafe = 0;
+        boolean permisoAdquirido = false;
+
         try {
-            semaforoCafetera.acquire();  
+            semaforoCafetera.acquire();
+            permisoAdquirido = true;
 
             for (IProducto producto : pedido.getProductos()) {
                 if (producto instanceof Cafe) {
                     tiempoCafe += producto.getTiempoDePreparacion();
                 }
             }
-            Thread.sleep(tiempoCafe * 1000);
-            semaforoCafetera.release();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        metricas.agregarTiempoCafeteraOcupada(tiempoCafe);
 
-        return tiempoCafe;
+            Thread.sleep(tiempoCafe * 1000);
+            metricas.agregarTiempoCafeteraOcupada(tiempoCafe);
+
+            return tiempoCafe;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return 0;
+        } finally {
+            if (permisoAdquirido) {
+                semaforoCafetera.release();
+                return tiempoCafe;
+            }
+        }
     }
 
+
+
+// ========================================= getters =========================================
+    
     public int getCantidad() {
         return cantidad;
     }
