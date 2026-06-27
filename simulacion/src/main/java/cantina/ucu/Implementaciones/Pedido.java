@@ -72,7 +72,7 @@ public class Pedido implements IPedido {
         int nuevaPrioridad = (cliente.getPrioridad() + cliente.getPuntosFidelidad() + (this.cantidadCafe() * bonusCafe ) + (int)calcularEnvejecimiento() * 2);
         
         if (calcularEnvejecimiento() > 300) {
-            this.prioridad = 99999999;
+            this.prioridad = Integer.MAX_VALUE;
             return this.prioridad;
         }
         
