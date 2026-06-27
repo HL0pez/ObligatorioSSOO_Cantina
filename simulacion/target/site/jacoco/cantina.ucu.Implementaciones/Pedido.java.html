@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Pedido.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">simulacion</a> &gt; <a href="index.source.html" class="el_package">cantina.ucu.Implementaciones</a> &gt; <span class="el_source">Pedido.java</span></div><h1>Pedido.java</h1><pre class="source lang-java linenums">package cantina.ucu.Implementaciones;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import cantina.ucu.Implementaciones.Enums.FuenteDePedido;
+import cantina.ucu.Implementaciones.Productos.Cafe;
+import cantina.ucu.Interfaces.IPedido;
+import cantina.ucu.Interfaces.IProducto;
+
+public class Pedido implements IPedido {
+
+    private List&lt;IProducto&gt; productos;
+    private Cliente cliente;
+<span class="fc" id="L16">    private int tiempoDePreparacion = 0;</span>
+    private FuenteDePedido fuente;
+    private boolean estaPago;
+    private int prioridad;
+    private static int contadorId;
+    private int id;
+    private LocalDateTime momentoDeCreacion;
+    private LocalDateTime momentoDeAtencion;
+    private LocalDateTime momentoDeEntrega;
+<span class="fc" id="L25">    private int bonusCafe = 2;</span>
+
+<span class="fc" id="L27">    public Pedido(List&lt;IProducto&gt; productos, Cliente cliente, FuenteDePedido fuenteDePedido, boolean estaPago){</span>
+<span class="fc" id="L28">        this.productos = productos;</span>
+<span class="fc" id="L29">        this.cliente = cliente;</span>
+<span class="fc" id="L30">        this.fuente = fuenteDePedido;</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        for (IProducto producto : productos) {</span>
+<span class="fc" id="L32">            this.tiempoDePreparacion += producto.getTiempoDePreparacion();</span>
+<span class="fc" id="L33">        }</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if (fuenteDePedido == FuenteDePedido.MOSTRADOR) {</span>
+<span class="nc" id="L35">            this.estaPago = false;</span>
+        }else{
+<span class="fc" id="L37">            this.estaPago = estaPago;</span>
+        }
+<span class="fc" id="L39">        synchronized (Pedido.class) {</span>
+<span class="fc" id="L40">            this.id = ++contadorId;</span>
+<span class="fc" id="L41">        }</span>
+<span class="fc" id="L42">        this.momentoDeCreacion = LocalDateTime.now();</span>
+<span class="fc" id="L43">        this.prioridad = calcularPrioridad();</span>
+<span class="fc" id="L44">    }</span>
+
+    @Override
+    public boolean tieneCafe() {
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (productos == null) {</span>
+<span class="nc" id="L49">            return false;</span>
+        }
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        for (IProducto producto : productos) {</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (producto instanceof Cafe) {</span>
+<span class="nc" id="L53">                return true;</span>
+            }
+<span class="nc" id="L55">        }</span>
+<span class="nc" id="L56">        return false;</span>
+    }
+
+    private int cantidadCafe(){
+<span class="fc" id="L60">        int i = 0;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (IProducto producto : productos) {</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">            if (producto instanceof Cafe) {</span>
+<span class="nc" id="L63">                ++i;</span>
+            }
+<span class="fc" id="L65">        }</span>
+<span class="fc" id="L66">        return i;</span>
+    }
+
+    @Override
+    public int calcularPrioridad() {
+        // Prioridad = rol + fidelidad + (cantCafe * bonusCafe) + (tiempoDeEspera)
+<span class="fc" id="L72">        int nuevaPrioridad = (cliente.getPrioridad() + cliente.getPuntosFidelidad() + (this.cantidadCafe() * bonusCafe ) + (int)calcularEnvejecimiento() * 2);</span>
+        
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">        if (calcularEnvejecimiento() &gt; 300) {</span>
+<span class="nc" id="L75">            this.prioridad = 99999999;</span>
+<span class="nc" id="L76">            return this.prioridad;</span>
+        }
+        
+<span class="fc" id="L79">        this.prioridad = nuevaPrioridad;</span>
+        //System.out.println(&quot;Prioridad nueva del pedido &quot; + this.id + &quot; &quot; + this.prioridad);
+        
+<span class="fc" id="L82">        return nuevaPrioridad;</span>
+    }
+
+    @Override
+    public long calcularEnvejecimiento(){
+<span class="fc" id="L87">        return Duration.between(momentoDeCreacion, LocalDateTime.now()).getSeconds();</span>
+    }
+
+    @Override
+    public int compareTo(IPedido otroPedido) {
+        
+<span class="fc" id="L93">        int comparacionPrioridad = Integer.compare(otroPedido.getPrioridad(),this.getPrioridad());</span>
+
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (comparacionPrioridad != 0) {</span>
+<span class="fc" id="L96">            return comparacionPrioridad;</span>
+        }else{
+<span class="nc" id="L98">            int comparacionId = Integer.compare(this.getId(), otroPedido.getId());</span>
+<span class="nc" id="L99">            return comparacionId;</span>
+        }
+    }
+
+// ========================================= getters =========================================
+
+    public List&lt;IProducto&gt; getProductos() {
+<span class="nc" id="L106">        return productos;</span>
+    }
+
+    public Cliente getCliente() {
+<span class="nc" id="L110">        return cliente;</span>
+    }
+
+    public int getTiempoDePreparacion() {
+<span class="nc" id="L114">        return tiempoDePreparacion;</span>
+    }
+
+    public FuenteDePedido getFuente() {
+<span class="nc" id="L118">        return fuente;</span>
+    }
+
+    public boolean getEstaPago() {
+<span class="nc" id="L122">        return estaPago;</span>
+    }
+
+    public int getPrioridad() {
+<span class="fc" id="L126">        return prioridad;</span>
+    }
+
+    public int getId(){
+<span class="fc" id="L130">        return this.id;</span>
+    }
+
+    public LocalDateTime getMomentoDeCreacion() {
+<span class="nc" id="L134">        return momentoDeCreacion;</span>
+    }
+
+    public LocalDateTime getMomentoDeAtencion() {
+<span class="fc" id="L138">        return momentoDeAtencion;</span>
+    }
+
+    public LocalDateTime getMomentoDeEntrega() {
+<span class="nc" id="L142">        return momentoDeEntrega;</span>
+    }
+
+// ========================================= setters =========================================
+
+    public void setPrioridad(int prioridad) {
+<span class="nc" id="L148">        this.prioridad = prioridad;</span>
+<span class="nc" id="L149">    }</span>
+
+    public void setMomentoDeCreacion() {
+<span class="nc" id="L152">        this.momentoDeCreacion = LocalDateTime.now();</span>
+<span class="nc" id="L153">    }</span>
+
+    public void setMomentoDeAtencion() {
+<span class="fc" id="L156">        this.momentoDeAtencion = LocalDateTime.now();</span>
+<span class="fc" id="L157">    }</span>
+    
+    public void setMomentoDeEntrega() {
+<span class="nc" id="L160">        this.momentoDeEntrega = LocalDateTime.now();</span>
+<span class="nc" id="L161">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

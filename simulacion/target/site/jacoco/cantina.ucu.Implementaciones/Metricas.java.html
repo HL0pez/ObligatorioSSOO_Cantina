@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Metricas.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">simulacion</a> &gt; <a href="index.source.html" class="el_package">cantina.ucu.Implementaciones</a> &gt; <span class="el_source">Metricas.java</span></div><h1>Metricas.java</h1><pre class="source lang-java linenums">package cantina.ucu.Implementaciones;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import cantina.ucu.Implementaciones.Enums.Rol;
+import cantina.ucu.Interfaces.ICantina;
+import cantina.ucu.Interfaces.IPedido;
+
+public final class Metricas {
+    private Queue&lt;IPedido&gt; pedidosCompletados;
+    private int tiempoCafeteraOcupada;
+<span class="fc" id="L17">    private static Metricas instancia = null;</span>
+<span class="fc" id="L18">    private final Lock mutexTiempo = new ReentrantLock();</span>
+<span class="fc" id="L19">    private final Lock mutexPedidos = new ReentrantLock();</span>
+    private ICantina cantina;
+    
+<span class="fc" id="L22">    private Metricas() {</span>
+<span class="fc" id="L23">        this.pedidosCompletados = new LinkedList&lt;IPedido&gt;();</span>
+<span class="fc" id="L24">        this.tiempoCafeteraOcupada = 0;</span>
+<span class="fc" id="L25">    }</span>
+
+    public static Metricas getInstancia() {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (instancia == null) {</span>
+<span class="fc" id="L29">            instancia = new Metricas();</span>
+        }
+<span class="fc" id="L31">        return instancia;</span>
+    }
+
+    public void imprimirMetricas(){
+<span class="nc" id="L35">        System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L36">        imprimirPendientes();</span>
+<span class="nc" id="L37">        System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L38">        imprimirPromedioTiempoEnEsperaPedidos();</span>
+<span class="nc" id="L39">        System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L40">        imprimirPromedioTiempoTotalPedidos();</span>
+<span class="nc" id="L41">        System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L42">        imprimirTiempoCafeteraOcupada();</span>
+<span class="nc" id="L43">        System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L44">    }</span>
+
+    private void imprimirTiempoCafeteraOcupada(){
+<span class="nc" id="L47">        System.out.println(&quot;Los slots de la cafetera estuvieron ocupados &quot; + tiempoCafeteraOcupada + &quot; segundos entre todos&quot;);</span>
+<span class="nc" id="L48">    }</span>
+
+    private void imprimirPromedioTiempoTotalPedidos() {
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (pedidosCompletados.isEmpty()) {</span>
+<span class="nc" id="L52">            System.out.println(&quot;Promedio tiempo total de pedidos: 0.0 segundos&quot;);</span>
+<span class="nc" id="L53">            return;</span>
+        }
+
+<span class="nc" id="L56">        long totalSegundos = 0;</span>
+<span class="nc" id="L57">        int pedidosValidos = 0;</span>
+
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        for (IPedido pedido : pedidosCompletados) {</span>
+<span class="nc" id="L60">            LocalDateTime creacion = pedido.getMomentoDeCreacion();</span>
+<span class="nc" id="L61">            LocalDateTime entrega = pedido.getMomentoDeEntrega();</span>
+<span class="nc bnc" id="L62" title="All 4 branches missed.">            if (creacion != null &amp;&amp; entrega != null) {</span>
+<span class="nc" id="L63">                long segundosPedido = Duration.between(creacion, entrega).getSeconds();</span>
+<span class="nc" id="L64">                totalSegundos += segundosPedido;</span>
+<span class="nc" id="L65">                pedidosValidos++;</span>
+<span class="nc" id="L66">                Rol rol = pedido.getCliente().getRol();</span>
+<span class="nc" id="L67">                System.out.println(&quot;El &quot; + rol + &quot; con pedido numero &quot; + pedido.getId() + &quot; demoro &quot; + segundosPedido + &quot; segundos en ser entregado&quot;);</span>
+            }
+<span class="nc" id="L69">        }</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        double promedioTiempoTotalPedidos = pedidosValidos == 0 ? 0.0 : (double) totalSegundos / pedidosValidos;</span>
+<span class="nc" id="L72">        System.out.println(&quot;\nPromedio tiempo total de pedidos: &quot; + promedioTiempoTotalPedidos + &quot; segundos&quot;);</span>
+<span class="nc" id="L73">    }</span>
+
+    private void imprimirPromedioTiempoEnEsperaPedidos() {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (pedidosCompletados.isEmpty()) {</span>
+<span class="nc" id="L77">            System.out.println(&quot;Promedio tiempo total en espera de pedidos: 0.0 segundos&quot;);</span>
+<span class="nc" id="L78">            return;</span>
+        }
+        
+<span class="nc" id="L81">        long totalSegundos = 0;</span>
+<span class="nc" id="L82">        long segundosPedidoMax = 0;</span>
+<span class="nc" id="L83">        long segundosPedidoMaxProfesor = 0;</span>
+<span class="nc" id="L84">        long totalSegundosProfesor = 0;</span>
+<span class="nc" id="L85">        long totalSegundosAlumno = 0;</span>
+<span class="nc" id="L86">        IPedido pedidoMasDemorado = null;</span>
+<span class="nc" id="L87">        IPedido profesorMasDemorado = null;</span>
+<span class="nc" id="L88">        int cantAlumnos = 0;</span>
+<span class="nc" id="L89">        int cantProfes = 0;</span>
+<span class="nc" id="L90">        int pedidosValidos = 0;</span>
+
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        for (IPedido pedido : pedidosCompletados) {</span>
+<span class="nc" id="L93">            LocalDateTime creacion = pedido.getMomentoDeCreacion();</span>
+<span class="nc" id="L94">            LocalDateTime atencion = pedido.getMomentoDeAtencion();</span>
+
+<span class="nc bnc" id="L96" title="All 4 branches missed.">            if (creacion != null &amp;&amp; atencion != null) {</span>
+<span class="nc" id="L97">                pedidosValidos++;</span>
+<span class="nc" id="L98">                long segundosPedido = Duration.between(creacion, atencion).getSeconds();</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">                if (segundosPedido &gt; segundosPedidoMax) {</span>
+<span class="nc" id="L100">                    segundosPedidoMax = segundosPedido;</span>
+<span class="nc" id="L101">                    pedidoMasDemorado = pedido;</span>
+                }
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                if (pedido.getCliente().getRol() == Rol.PROFESOR) {</span>
+<span class="nc" id="L104">                    totalSegundosProfesor += segundosPedido;</span>
+<span class="nc" id="L105">                    cantProfes++;</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                    if (segundosPedido &gt; segundosPedidoMaxProfesor) {</span>
+<span class="nc" id="L107">                        segundosPedidoMaxProfesor = segundosPedido;</span>
+<span class="nc" id="L108">                        profesorMasDemorado = pedido;</span>
+                    }
+                }
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                if (pedido.getCliente().getRol() == Rol.ESTUDIANTE) {</span>
+<span class="nc" id="L113">                    totalSegundosAlumno += segundosPedido;</span>
+<span class="nc" id="L114">                    cantAlumnos++;</span>
+                }
+<span class="nc" id="L116">                totalSegundos += segundosPedido;</span>
+<span class="nc" id="L117">                System.out.println(&quot;El &quot; + pedido.getCliente().getRol() + &quot; con pedido numero &quot; + pedido.getId() + &quot; demoro &quot; + segundosPedido + &quot; segundos en ser atendido&quot;);</span>
+            }
+<span class="nc" id="L119">        }</span>
+
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (pedidosValidos != 0) {</span>
+<span class="nc" id="L122">            double promedioTiempoEnEsperaPedidos = (double) totalSegundos / pedidosValidos;</span>
+<span class="nc" id="L123">            System.out.println(&quot;\nPromedio tiempo en espera de pedidos: &quot; + promedioTiempoEnEsperaPedidos + &quot; segundos&quot;);</span>
+        }
+
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (cantProfes != 0) {</span>
+<span class="nc" id="L127">            double promedioTiempoEnEsperaPedidosProfe = (double) totalSegundosProfesor / cantProfes;</span>
+<span class="nc" id="L128">            System.out.println(&quot;\nPromedio tiempo en espera de pedidos de profesores: &quot; + promedioTiempoEnEsperaPedidosProfe + &quot; segundos&quot;);</span>
+        }
+
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (cantAlumnos != 0) {</span>
+<span class="nc" id="L132">            double promedioTiempoEnEsperaPedidosEstudiante = (double) totalSegundosAlumno / cantAlumnos;</span>
+<span class="nc" id="L133">            System.out.println(&quot;\nPromedio tiempo en espera de pedidos de alumnos: &quot; + promedioTiempoEnEsperaPedidosEstudiante + &quot; segundos&quot;);</span>
+        }
+        
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (pedidoMasDemorado != null) {</span>
+<span class="nc" id="L137">            System.out.println(&quot;El pedido que espero en general mas fue &quot; + pedidoMasDemorado.getId() + &quot; con &quot; + segundosPedidoMax + &quot; segundos en ser atendido&quot;);</span>
+        }
+        
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        if (profesorMasDemorado != null) {</span>
+<span class="nc" id="L141">            System.out.println(&quot;El pedido del profesor que espero mas fue &quot; + profesorMasDemorado.getId() + &quot; con &quot; + segundosPedidoMaxProfesor + &quot; segundos en ser atendido&quot;);</span>
+        }
+<span class="nc" id="L143">    }</span>
+
+    private void imprimirPendientes() {
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (this.cantina != null) {</span>
+<span class="nc" id="L147">            System.out.println(&quot;Quedaron &quot; + cantina.getPedidosPendientes().size() + &quot; pedidos sin atender&quot;);        </span>
+        }
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        for (IPedido pedido : cantina.getPedidosPendientes()) {</span>
+<span class="nc" id="L150">            long espera = Duration.between(pedido.getMomentoDeCreacion(), LocalDateTime.now()).getSeconds();</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">            if (espera &gt; 300) {</span>
+<span class="nc" id="L152">                System.out.println(&quot;El pedido&quot; + pedido.getId() + &quot; supero el umbral de espera de 5 minutos&quot;);</span>
+            }
+<span class="nc" id="L154">        }</span>
+<span class="nc" id="L155">    }</span>
+
+    public void agregarTiempoCafeteraOcupada(int tiempo){
+<span class="fc" id="L158">        mutexTiempo.lock();</span>
+        try {
+<span class="fc" id="L160">            this.tiempoCafeteraOcupada += tiempo;</span>
+        } finally {
+<span class="fc" id="L162">            mutexTiempo.unlock();</span>
+        }
+<span class="fc" id="L164">    }</span>
+    
+// ========================================= getters =========================================
+    
+    public Queue&lt;IPedido&gt; getPedidosCompletados() {
+<span class="fc" id="L169">        mutexPedidos.lock();</span>
+        try {
+<span class="fc" id="L171">            return pedidosCompletados;</span>
+        } finally {
+<span class="fc" id="L173">            mutexPedidos.unlock();</span>
+        }
+    }
+
+    public int getTiempoCafeteraOcupada() {
+<span class="fc" id="L178">        mutexTiempo.lock();</span>
+        try {
+<span class="fc" id="L180">            return tiempoCafeteraOcupada;</span>
+        } finally {
+<span class="fc" id="L182">            mutexTiempo.unlock();</span>
+        }
+    }
+
+    // ========================================= getters =========================================
+
+    public void setCantina(ICantina cantina){
+<span class="fc" id="L189">        this.cantina = cantina;</span>
+<span class="fc" id="L190">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cliente.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">simulacion</a> &gt; <a href="index.source.html" class="el_package">cantina.ucu.Implementaciones</a> &gt; <span class="el_source">Cliente.java</span></div><h1>Cliente.java</h1><pre class="source lang-java linenums">package cantina.ucu.Implementaciones;
+
+import java.util.List;
+
+import cantina.ucu.Implementaciones.Enums.FuenteDePedido;
+import cantina.ucu.Implementaciones.Enums.Rol;
+import cantina.ucu.Interfaces.ICantina;
+import cantina.ucu.Interfaces.IPedido;
+import cantina.ucu.Interfaces.IProducto;
+
+public class Cliente extends Thread {
+
+    private int prioridad;
+    private int puntosFidelidad;
+    private Rol rol;
+    private IPedido pedido;
+    private ICantina cantina;
+
+<span class="fc" id="L19">    public Cliente(Rol rol){</span>
+<span class="fc" id="L20">        this.rol = rol;</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (rol == Rol.PROFESOR) {</span>
+<span class="fc" id="L22">            this.prioridad = 50;</span>
+        }
+<span class="fc" id="L24">    }</span>
+    /*es privado porque  es el que corre después de hscer .start() */
+    private void registrarPedido(IPedido pedido) {
+<span class="nc" id="L27">        cantina.agregarPedido(pedido);</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if(puntosFidelidad &lt; 100){</span>
+<span class="nc" id="L29">            ++puntosFidelidad;</span>
+        }
+<span class="nc" id="L31">    }</span>
+
+    /*este es el que se usa en el main,  */
+    public void crearPedido(ICantina cantina, List&lt;IProducto&gt; productos, FuenteDePedido fuenteDePedido, boolean estaPago) {
+<span class="nc" id="L35">        this.pedido = new Pedido(productos, this , fuenteDePedido, estaPago);</span>
+<span class="nc" id="L36">        this.cantina = cantina;</span>
+<span class="nc" id="L37">    }</span>
+    /* crea nuevas instancias de pedido con los mismos atributos pero distinto id */
+    private void crearPedido(IPedido pedido){
+<span class="nc" id="L40">        this.pedido = new Pedido(pedido.getProductos(), this, pedido.getFuente(), pedido.getEstaPago());</span>
+<span class="nc" id="L41">    }</span>
+
+
+    @Override
+    public void run() {
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        while (cantina.estaAbierta()) {</span>
+<span class="nc bnc" id="L47" title="All 4 branches missed.">        if (pedido != null &amp;&amp; cantina.estaAbierta()) {</span>
+<span class="nc" id="L48">            crearPedido(pedido);</span>
+<span class="nc" id="L49">            pedido.setMomentoDeCreacion();</span>
+<span class="nc" id="L50">            System.out.println(Thread.currentThread().getName() + &quot; hizo el pedido &quot; + pedido.getId() + &quot; desde &quot; + pedido.getFuente() + &quot; con prioridad &quot; + pedido.getPrioridad());</span>
+<span class="nc" id="L51">            registrarPedido(pedido);</span>
+        }
+        try {
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            if (pedido.getFuente() == FuenteDePedido.APP) {</span>
+<span class="nc" id="L55">                Thread.sleep(10000);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            }else if (pedido.getFuente() == FuenteDePedido.TOTEM) {</span>
+<span class="nc" id="L57">                Thread.sleep(20000);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">            }else if (pedido.getFuente() == FuenteDePedido.MOSTRADOR) {</span>
+<span class="nc" id="L59">                Thread.sleep(30000);</span>
+            }
+<span class="nc" id="L61">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L62">            e.printStackTrace();</span>
+<span class="nc" id="L63">        }</span>
+        }
+<span class="nc" id="L65">    }</span>
+
+// ========================================= getters =========================================
+
+    public int getPrioridad() {
+<span class="fc" id="L70">        return prioridad;</span>
+    }
+
+    public int getPuntosFidelidad() {
+<span class="fc" id="L74">        return puntosFidelidad;</span>
+    }
+
+    public Rol getRol() {
+<span class="nc" id="L78">        return rol;</span>
+    }
+
+    
+// ========================================= setters =========================================
+
+    public void setPuntosFidelidad(int nuevosPuntos){
+<span class="fc" id="L85">        this.puntosFidelidad = nuevosPuntos;</span>
+<span class="fc" id="L86">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

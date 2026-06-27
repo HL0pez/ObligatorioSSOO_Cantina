@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Barista.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">simulacion</a> &gt; <a href="index.source.html" class="el_package">cantina.ucu.Implementaciones</a> &gt; <span class="el_source">Barista.java</span></div><h1>Barista.java</h1><pre class="source lang-java linenums">package cantina.ucu.Implementaciones;
+
+import java.util.concurrent.locks.Lock;
+
+import cantina.ucu.Implementaciones.Productos.Cafe;
+import cantina.ucu.Implementaciones.RecursosCompartidos.CajaRegistradora;
+import cantina.ucu.Interfaces.ICantina;
+import cantina.ucu.Interfaces.IPedido;
+import cantina.ucu.Interfaces.IProducto;
+import cantina.ucu.Interfaces.IRecursoCompartido;
+
+public class Barista extends Thread {
+
+    private ICantina cantina;
+<span class="fc" id="L15">    private Metricas metricas = Metricas.getInstancia();</span>
+
+<span class="fc" id="L17">    public Barista(ICantina cantina) {</span>
+<span class="fc" id="L18">        this.cantina = cantina;</span>
+<span class="fc" id="L19">    }</span>
+
+    /*
+    la logica de como se procesan los pedidos
+    */
+    private void prepararPedido(IPedido pedido) throws InterruptedException {
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        if (pedido.tieneCafe()) {</span>
+<span class="nc" id="L26">                IRecursoCompartido cafetera = cantina.getCafetera();</span>
+<span class="nc" id="L27">                System.out.println(Thread.currentThread().getName() + &quot; ocupa un slot de la cafetera&quot;);</span>
+<span class="nc" id="L28">                int tiempoCafe = cafetera.atender(pedido);</span>
+<span class="nc" id="L29">                System.out.println(Thread.currentThread().getName() + &quot; usó el slot por &quot; + tiempoCafe + &quot; segundos&quot;);</span>
+<span class="nc" id="L30">                System.out.println(Thread.currentThread().getName() + &quot; libera el slot de la cafetera&quot;);</span>
+            }
+
+<span class="nc" id="L33">            int tiempoDePreparacion = 0;</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">            for (IProducto producto : pedido.getProductos()) {</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">                if (!(producto instanceof Cafe)) {</span>
+<span class="nc" id="L36">                    tiempoDePreparacion += producto.getTiempoDePreparacion();</span>
+                }
+<span class="nc" id="L38">            }</span>
+
+            try {
+<span class="nc" id="L41">                System.out.println(Thread.currentThread().getName() + &quot; prepara el resto del pedido en &quot; + tiempoDePreparacion + &quot; segundos&quot;);</span>
+<span class="nc" id="L42">                Thread.sleep(tiempoDePreparacion * 1000);</span>
+<span class="nc" id="L43">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L44">                e.printStackTrace();</span>
+<span class="nc" id="L45">            }</span>
+
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            if (!pedido.getEstaPago()) {</span>
+<span class="nc" id="L48">                CajaRegistradora caja = (CajaRegistradora) cantina.getCaja();</span>
+<span class="nc" id="L49">                Lock mutex = caja.getMutex();</span>
+
+<span class="nc" id="L51">                mutex.lock();</span>
+                try {
+<span class="nc" id="L53">                    System.out.println(Thread.currentThread().getName() + &quot; ocupa caja&quot;);</span>
+<span class="nc" id="L54">                    caja.atender(pedido);</span>
+                } finally {
+<span class="nc" id="L56">                    System.out.println(Thread.currentThread().getName() + &quot; libera la caja&quot;);</span>
+<span class="nc" id="L57">                    mutex.unlock();</span>
+                }
+            }
+<span class="nc" id="L60">    }   </span>
+
+    /*
+    mientras la cantina este abierta procesa pedidos y asigna sus metricas
+    */
+    @Override
+    public void run() {
+<span class="nc bnc" id="L67" title="All 4 branches missed.">        while (!Thread.currentThread().isInterrupted() &amp;&amp; cantina.estaAbierta()) {</span>
+            try {
+                
+<span class="nc" id="L70">                IPedido pedido = cantina.procesarPedido();                </span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                if (pedido == null) {</span>
+<span class="nc" id="L72">                    break;</span>
+                }
+                
+<span class="nc" id="L75">                System.out.println(Thread.currentThread().getName() + &quot; tomo el pedido &quot; + pedido.getId() );</span>
+
+<span class="nc" id="L77">                prepararPedido(pedido);</span>
+<span class="nc" id="L78">                System.out.println(Thread.currentThread().getName() + &quot; preparó pedido &quot; + pedido.getId());</span>
+<span class="nc" id="L79">                pedido.setMomentoDeEntrega();</span>
+
+<span class="nc" id="L81">                metricas.getPedidosCompletados().add(pedido);</span>
+                
+<span class="nc" id="L83">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L84">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L85">                break;</span>
+<span class="nc" id="L86">            }</span>
+        }
+<span class="nc" id="L88">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

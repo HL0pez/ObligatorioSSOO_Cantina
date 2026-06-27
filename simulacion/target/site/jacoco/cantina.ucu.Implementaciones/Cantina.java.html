@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cantina.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">simulacion</a> &gt; <a href="index.source.html" class="el_package">cantina.ucu.Implementaciones</a> &gt; <span class="el_source">Cantina.java</span></div><h1>Cantina.java</h1><pre class="source lang-java linenums">package cantina.ucu.Implementaciones;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+
+import cantina.ucu.Interfaces.ICantina;
+import cantina.ucu.Interfaces.IPedido;
+import cantina.ucu.Interfaces.IRecursoCompartido;
+
+public class Cantina implements ICantina {
+
+    private IRecursoCompartido cafetera;
+    private PriorityQueue&lt;IPedido&gt; pedidosPendientes;
+    private IRecursoCompartido caja;
+<span class="fc" id="L17">    private List&lt;Thread&gt; baristas = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L18">    private boolean abierta = false;</span>
+    private Thread reloj;
+
+<span class="fc" id="L21">    public Cantina(IRecursoCompartido cafetera, IRecursoCompartido cajaRegistradora, int cantidadBaristas){</span>
+<span class="fc" id="L22">        this.cafetera = cafetera;</span>
+<span class="fc" id="L23">        this.caja = cajaRegistradora;</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        for (int i = 0; i &lt; cantidadBaristas; i++) {</span>
+<span class="fc" id="L25">            Thread hiloBarista = new Thread(new Barista(this),&quot;Barista-&quot; + (i + 1));</span>
+<span class="fc" id="L26">            baristas.add(hiloBarista);</span>
+        }
+<span class="fc" id="L28">        this.pedidosPendientes = new PriorityQueue&lt;&gt;();</span>
+<span class="fc" id="L29">    }</span>
+
+    /*  
+    procesa el pedido con más prioridad con el run de barista
+    y guarda sus metricas
+    */
+    @Override
+    public IPedido procesarPedido() {
+<span class="fc" id="L37">        synchronized(pedidosPendientes){</span>
+<span class="pc bpc" id="L38" title="1 of 4 branches missed.">            while (pedidosPendientes.isEmpty() &amp;&amp; abierta) {</span>
+                try {
+<span class="nc" id="L40">                    pedidosPendientes.wait();</span>
+<span class="nc" id="L41">                } catch (InterruptedException e) {</span>
+<span class="nc" id="L42">                    e.printStackTrace();</span>
+<span class="nc" id="L43">                }</span>
+            }
+<span class="fc bfc" id="L45" title="All 2 branches covered.">            if (pedidosPendientes.isEmpty()) {</span>
+<span class="fc" id="L46">                return null;</span>
+            }
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">            if (abierta) {</span>
+<span class="fc" id="L49">                recalcularPrioridad();</span>
+<span class="fc" id="L50">                IPedido pedido = pedidosPendientes.poll();</span>
+<span class="fc" id="L51">                pedido.setMomentoDeAtencion();</span>
+<span class="fc" id="L52">                return pedido;</span>
+            }
+<span class="nc" id="L54">            return null;</span>
+        }
+    }
+
+    /*
+    agrega el pedido a pendientes
+    */
+    @Override
+    public void agregarPedido(IPedido pedido) {
+<span class="fc" id="L63">        synchronized (pedidosPendientes) {</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">            if (!abierta) {</span>
+<span class="fc" id="L65">                return;</span>
+            }
+<span class="fc" id="L67">            pedidosPendientes.add(pedido);</span>
+<span class="fc" id="L68">            pedidosPendientes.notifyAll();    </span>
+<span class="fc" id="L69">        }</span>
+<span class="fc" id="L70">    }</span>
+
+    /*
+    recalcula la prioridad de todos los pedidos en pendientes
+    */
+    public void recalcularPrioridad() {
+<span class="fc" id="L76">        synchronized (pedidosPendientes) {</span>
+<span class="fc" id="L77">            List&lt;IPedido&gt; pedidos = new ArrayList&lt;&gt;(pedidosPendientes);</span>
+<span class="fc" id="L78">            pedidosPendientes.clear();</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            for (IPedido pedido : pedidos) {</span>
+<span class="fc" id="L81">                pedido.calcularPrioridad();</span>
+<span class="fc" id="L82">                pedidosPendientes.add(pedido);</span>
+<span class="fc" id="L83">            }</span>
+<span class="fc" id="L84">        }</span>
+<span class="fc" id="L85">    }</span>
+
+    public void simulacion(int segundos){
+<span class="nc" id="L88">        this.reloj = new Thread(new Reloj(segundos));</span>
+<span class="nc" id="L89">        reloj.start();</span>
+<span class="nc" id="L90">        cerrar();</span>
+<span class="nc" id="L91">    }</span>
+
+    public boolean estaAbierta() {
+<span class="nc" id="L94">        return this.abierta;</span>
+    }
+    
+    public void cerrar() {
+<span class="fc" id="L98">        synchronized (pedidosPendientes) {        </span>
+<span class="fc" id="L99">            this.abierta = false;</span>
+<span class="fc" id="L100">            pedidosPendientes.notifyAll();</span>
+<span class="fc" id="L101">        }</span>
+<span class="fc" id="L102">    }</span>
+
+    public void abrir() {
+<span class="nc" id="L105">        this.abierta = true;</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        for (Thread barista : baristas) {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            if (!barista.isAlive()) {</span>
+<span class="nc" id="L108">                barista.start();</span>
+            }
+<span class="nc" id="L110">        }</span>
+<span class="nc" id="L111">    }</span>
+
+// ========================================= getters =========================================
+    public IRecursoCompartido getCafetera() {
+<span class="nc" id="L115">        return cafetera;</span>
+    }
+
+    public PriorityQueue&lt;IPedido&gt; getPedidosPendientes() {
+<span class="fc" id="L119">        synchronized(pedidosPendientes){</span>
+<span class="fc" id="L120">            return pedidosPendientes;</span>
+        }
+    }
+
+    public IRecursoCompartido getCaja() {
+<span class="nc" id="L125">        return caja;</span>
+    }
+
+    public List&lt;Thread&gt; getBaristas() {
+<span class="nc" id="L129">        return baristas;</span>
+    }
+
+    @Override
+    public Thread getReloj() {
+<span class="nc" id="L134">        return this.reloj;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

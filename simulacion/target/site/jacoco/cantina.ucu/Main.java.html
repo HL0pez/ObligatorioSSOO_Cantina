@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">simulacion</a> &gt; <a href="index.source.html" class="el_package">cantina.ucu</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package cantina.ucu;
+
+import java.util.LinkedList;
+
+import cantina.ucu.Implementaciones.Cantina;
+import cantina.ucu.Implementaciones.Cliente;
+import cantina.ucu.Implementaciones.Metricas;
+import cantina.ucu.Implementaciones.Enums.FuenteDePedido;
+import cantina.ucu.Implementaciones.Enums.Rol;
+import cantina.ucu.Implementaciones.Productos.Agua;
+import cantina.ucu.Implementaciones.Productos.Cafe;
+import cantina.ucu.Implementaciones.Productos.Medialuna;
+import cantina.ucu.Implementaciones.RecursosCompartidos.Cafetera;
+import cantina.ucu.Implementaciones.RecursosCompartidos.CajaRegistradora;
+import cantina.ucu.Interfaces.ICantina;
+import cantina.ucu.Interfaces.IProducto;
+import cantina.ucu.Interfaces.IRecursoCompartido;
+
+<span class="nc" id="L19">public class Main {</span>
+    public static void main(String[] args) {
+
+<span class="nc" id="L22">        Metricas metricas = Metricas.getInstancia();</span>
+
+<span class="nc" id="L24">        IProducto awita = new Agua(1);</span>
+<span class="nc" id="L25">        IProducto cortadito = new Cafe(3);</span>
+<span class="nc" id="L26">        IProducto medialunita = new Medialuna(2);</span>
+<span class="nc" id="L27">        IProducto capuchin = new Cafe(4);</span>
+
+<span class="nc" id="L29">        IRecursoCompartido cafetera = new Cafetera(2);</span>
+<span class="nc" id="L30">        IRecursoCompartido caja = new CajaRegistradora();</span>
+
+<span class="nc" id="L32">        ICantina cantinaCUCU = new Cantina(cafetera, caja, 2);</span>
+
+<span class="nc" id="L34">        metricas.setCantina(cantinaCUCU);</span>
+        
+<span class="nc" id="L36">        LinkedList&lt;IProducto&gt; productos1 = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L37">        LinkedList&lt;IProducto&gt; productos2 = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L38">        LinkedList&lt;IProducto&gt; productos3 = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L39">        LinkedList&lt;IProducto&gt; productos4 = new LinkedList&lt;&gt;();</span>
+
+<span class="nc" id="L41">        productos1.add(capuchin);</span>
+<span class="nc" id="L42">        productos1.add(awita);</span>
+<span class="nc" id="L43">        productos1.add(medialunita);</span>
+<span class="nc" id="L44">        productos1.add(medialunita);</span>
+
+<span class="nc" id="L46">        productos2.add(capuchin);</span>
+<span class="nc" id="L47">        productos2.add(cortadito);</span>
+<span class="nc" id="L48">        productos2.add(medialunita);</span>
+
+<span class="nc" id="L50">        productos3.add(medialunita);</span>
+<span class="nc" id="L51">        productos3.add(awita);</span>
+
+<span class="nc" id="L53">        productos4.add(medialunita);</span>
+<span class="nc" id="L54">        productos4.add(medialunita);</span>
+
+<span class="nc" id="L56">        Cliente seba = new Cliente(Rol.PROFESOR);</span>
+<span class="nc" id="L57">        Cliente enzo = new Cliente(Rol.PROFESOR);</span>
+<span class="nc" id="L58">        Cliente pablito = new Cliente(Rol.PROFESOR);</span>
+<span class="nc" id="L59">        Cliente milgar = new Cliente(Rol.ESTUDIANTE);</span>
+<span class="nc" id="L60">        Cliente her = new Cliente(Rol.ESTUDIANTE);</span>
+<span class="nc" id="L61">        Cliente santi = new Cliente(Rol.ESTUDIANTE);</span>
+<span class="nc" id="L62">        Cliente alexis = new Cliente(Rol.ESTUDIANTE);</span>
+<span class="nc" id="L63">        Cliente axel = new Cliente(Rol.ESTUDIANTE);</span>
+
+<span class="nc" id="L65">        milgar.setPuntosFidelidad(25);</span>
+<span class="nc" id="L66">        santi.setPuntosFidelidad(10);</span>
+<span class="nc" id="L67">        seba.setPuntosFidelidad(20);</span>
+
+<span class="nc" id="L69">        seba.crearPedido(cantinaCUCU, productos1, FuenteDePedido.APP, true);</span>
+<span class="nc" id="L70">        enzo.crearPedido(cantinaCUCU, productos2, FuenteDePedido.TOTEM, false);</span>
+<span class="nc" id="L71">        pablito.crearPedido(cantinaCUCU, productos3, FuenteDePedido.MOSTRADOR, false);</span>
+<span class="nc" id="L72">        milgar.crearPedido(cantinaCUCU, productos4, FuenteDePedido.MOSTRADOR, false);</span>
+<span class="nc" id="L73">        her.crearPedido(cantinaCUCU, productos4, FuenteDePedido.APP, true);</span>
+<span class="nc" id="L74">        santi.crearPedido(cantinaCUCU, productos3, FuenteDePedido.TOTEM, false);</span>
+<span class="nc" id="L75">        alexis.crearPedido(cantinaCUCU, productos2, FuenteDePedido.MOSTRADOR, false);</span>
+<span class="nc" id="L76">        axel.crearPedido(cantinaCUCU, productos1, FuenteDePedido.MOSTRADOR, false);</span>
+        
+<span class="nc" id="L78">        cantinaCUCU.abrir();</span>
+
+<span class="nc" id="L80">        Thread hiloSeba = new Thread(seba, &quot;Seba&quot;);</span>
+<span class="nc" id="L81">        Thread hiloEnzo = new Thread(enzo, &quot;Enzo&quot;);</span>
+<span class="nc" id="L82">        Thread hiloPablito = new Thread(pablito, &quot;Pablito&quot;);</span>
+<span class="nc" id="L83">        Thread hiloMilgar = new Thread(milgar, &quot;Mili&quot;);</span>
+<span class="nc" id="L84">        Thread hiloHer = new Thread(her, &quot;Her&quot;);</span>
+<span class="nc" id="L85">        Thread hiloSanti = new Thread(santi, &quot;Santi&quot;);</span>
+<span class="nc" id="L86">        Thread hiloAlexis = new Thread(alexis, &quot;Alexis&quot;);</span>
+<span class="nc" id="L87">        Thread hiloAxel = new Thread(axel, &quot;Axel&quot;);</span>
+
+<span class="nc" id="L89">        System.out.println(&quot;Iniciando simulación...&quot;);</span>
+<span class="nc" id="L90">        cantinaCUCU.simulacion(60);</span>
+
+<span class="nc" id="L92">        hiloSeba.start();</span>
+<span class="nc" id="L93">        hiloEnzo.start();</span>
+<span class="nc" id="L94">        hiloPablito.start();</span>
+<span class="nc" id="L95">        hiloMilgar.start();</span>
+<span class="nc" id="L96">        hiloHer.start();</span>
+<span class="nc" id="L97">        hiloSanti.start();</span>
+<span class="nc" id="L98">        hiloAlexis.start();</span>
+<span class="nc" id="L99">        hiloAxel.start();</span>
+
+        try {
+<span class="nc" id="L102">            hiloSeba.join();</span>
+<span class="nc" id="L103">            hiloEnzo.join();</span>
+<span class="nc" id="L104">            hiloPablito.join();</span>
+<span class="nc" id="L105">            hiloMilgar.join();</span>
+<span class="nc" id="L106">            hiloHer.join();</span>
+<span class="nc" id="L107">            hiloSanti.join();</span>
+<span class="nc" id="L108">            hiloAlexis.join();</span>
+<span class="nc" id="L109">            hiloAxel.join();</span>
+
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            for (Thread barista : cantinaCUCU.getBaristas()) {</span>
+<span class="nc" id="L112">                barista.join();</span>
+<span class="nc" id="L113">            }</span>
+
+<span class="nc" id="L115">            metricas.imprimirMetricas();</span>
+<span class="nc" id="L116">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L117">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L118">        }</span>
+
+<span class="nc" id="L120">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -85,8 +85,9 @@ public class Cantina implements ICantina {
     }
 
     public void simulacion(int segundos){
-        this.reloj = new Thread(new Reloj(segundos, this));
+        this.reloj = new Thread(new Reloj(segundos));
         reloj.start();
+        cerrar();
     }
 
     public boolean estaAbierta() {
