@@ -2,7 +2,6 @@ package cantina.ucu.Implementaciones.RecursosCompartidos;
 
 import java.util.concurrent.Semaphore;
 
-import cantina.ucu.Implementaciones.Metricas;
 import cantina.ucu.Implementaciones.Productos.Cafe;
 import cantina.ucu.Interfaces.IPedido;
 import cantina.ucu.Interfaces.IProducto;
@@ -12,13 +11,11 @@ public class Cafetera implements IRecursoCompartido {
 
     private final int cantidad;
     private Semaphore semaforoCafetera;
-    private final Metricas metricas;
 
 
     public Cafetera(int slots) {
         this.cantidad = slots;
         this.semaforoCafetera = new Semaphore(slots);
-        this.metricas = Metricas.getInstancia();
     }
 
     /*
@@ -43,7 +40,6 @@ public class Cafetera implements IRecursoCompartido {
             }
 
             Thread.sleep(tiempoCafe * 1000);
-            metricas.agregarTiempoCafeteraOcupada(tiempoCafe);
 
             return tiempoCafe;
         } catch (InterruptedException e) {

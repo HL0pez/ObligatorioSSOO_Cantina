@@ -36,6 +36,7 @@ public class Barista extends Thread {
                     tiempoDePreparacion += producto.getTiempoDePreparacion();
                 }
             }
+            metricas.agregarTiempoCafeteraOcupada(tiempoDePreparacion);
 
             try {
                 System.out.println(Thread.currentThread().getName() + " prepara el resto del pedido en " + tiempoDePreparacion + " segundos");
